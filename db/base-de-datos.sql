@@ -2129,3 +2129,181 @@ BEGIN
 END//
 
 DELIMITER ;
+
+--pruebas
+
+-- =====================================================================
+-- OmniDesk · Base de datos v2 · 08 · DATOS DEMO (OPCIONAL)
+-- Replica lo que muestran las pantallas (María González, bandeja, etc.).
+-- Requiere haber ejecutado 01 a 07. NO lo cargues en producción.
+--
+-- Contraseñas: los usuarios demo llevan un hash inválido a propósito
+-- (nadie puede iniciar sesión con él). En el Paso C (backend) crearemos
+-- un script que fije la contraseña con bcrypt.
+-- =====================================================================
+SET NAMES utf8mb4;
+USE omnidesk_db;
+
+-- ---------------------------------------------------------------------
+-- Usuarios demo
+-- ---------------------------------------------------------------------
+INSERT INTO usuarios (id_usuario, id_rol, nombre_completo, correo, password_hash, telefono, zona_horaria, presencia) VALUES
+(1, 1, 'Admin OmniDesk', 'admin@omnidesk.local',      '!PENDIENTE_ESTABLECER_PASSWORD!', '+5491100000001', 'UTC-3', 'Disponible'),
+(2, 2, 'Laura Méndez',   'laura.mendez@omnidesk.local','!PENDIENTE_ESTABLECER_PASSWORD!', '+5491100000002', 'UTC-3', 'Disponible'),
+(3, 3, 'Marcos Peña',    'marcos.pena@omnidesk.local', '!PENDIENTE_ESTABLECER_PASSWORD!', '+5491100000003', 'UTC-3', 'Disponible'),
+(4, 3, 'Julia Rivas',    'julia.rivas@omnidesk.local', '!PENDIENTE_ESTABLECER_PASSWORD!', '+5491100000004', 'UTC-3', 'Ausente');
+
+-- ---------------------------------------------------------------------
+-- Clientes
+-- ---------------------------------------------------------------------
+INSERT INTO clientes (id_cliente, nombre, correo, telefono, nivel_lealtad, fecha_registro) VALUES
+(1, 'María González',   'maria.g@email.com',       '+5491155558901', 'Gold',     '2021-03-15 10:00:00'),
+(2, 'Carlos Ruiz',      'carlos.ruiz@email.com',   '+5491155550112', 'Silver',   '2022-06-02 09:30:00'),
+(3, 'Lucía Fernández',  'lucia.f@email.com',       '+5491155550223', 'Bronze',   '2024-01-20 16:45:00'),
+(4, 'Andrés Torres',    'andres.t@email.com',      '+5491155550334', 'Platinum', '2020-11-08 12:10:00'),
+(5, 'Sofía Martínez',   'sofia.m@email.com',       '+5491155550445', 'Gold',     '2023-04-27 08:20:00'),
+(6, 'Diego Herrera',    'diego.h@email.com',       '+5491155550556', 'Silver',   '2022-09-14 14:05:00'),
+(7, 'Valentina López',  'valentina.l@email.com',   '+5491155550667', 'Bronze',   '2025-02-03 11:00:00');
+
+-- ---------------------------------------------------------------------
+-- Conversaciones (30-sep-2026)
+-- ---------------------------------------------------------------------
+INSERT INTO conversaciones (id_conversacion, id_cliente, id_canal, id_agente, asunto, estado, prioridad, puntaje_sentimiento, fecha_creacion) VALUES
+(1, 1, 1, 3,    'Pedido #78412 no llega',          'Abierto',   'Urgente', 18,   '2026-09-30 10:30:00'),
+(2, 2, 2, 4,    'Factura del mes de agosto',       'Abierto',   'Normal',  55,   '2026-09-30 10:15:00'),
+(3, 3, 3, 3,    'Reembolso pendiente',             'Abierto',   'Normal',  48,   '2026-09-30 09:58:00'),
+(4, 4, 4, NULL, 'Cancelación de suscripción',      'Abierto',   'Urgente', 30,   '2026-09-30 09:25:00'),
+(5, 5, 1, 4,    'Seguimiento de entrega',          'Abierto',   'Normal',  92,   '2026-09-30 08:50:00'),
+(6, 6, 2, NULL, 'Consulta sobre garantía',         'Pendiente', 'Normal',  60,   '2026-09-30 08:40:00'),
+(7, 7, 3, 3,    'No puede iniciar sesión',         'Abierto',   'Urgente', 35,   '2026-09-30 08:20:00');
+
+-- ---------------------------------------------------------------------
+-- Mensajes (el trigger actualiza último mensaje y primera respuesta)
+-- ---------------------------------------------------------------------
+-- Conversación 1: María González (3 mensajes del cliente sin leer)
+INSERT INTO mensajes (id_conversacion, remitente, id_usuario, contenido, leido, fecha_envio) VALUES
+(1, 'Cliente', NULL, 'Hola, necesito ayuda con mi pedido #78412. Llevo 5 días esperando y no llega.', 1, '2026-09-30 10:30:00'),
+(1, 'Agente',  3,    'Buenos días María. Entiendo tu preocupación. Déjame verificar el estado de tu pedido ahora mismo.', 1, '2026-09-30 10:32:00'),
+(1, 'Cliente', NULL, 'Es que lo necesito con urgencia para este fin de semana. ¿Pueden agilizarlo?', 0, '2026-09-30 10:35:00'),
+(1, 'Agente',  3,    'Veo que tu pedido está en tránsito. El transportista lo tiene desde ayer. Te comparto el enlace de seguimiento ahora.', 1, '2026-09-30 10:37:00'),
+(1, 'Cliente', NULL, 'Llevo días mirando ese enlace y no actualiza. Esto es inaceptable, llevo semanas siendo cliente y nunca me había pasado esto.', 0, '2026-09-30 10:40:00'),
+(1, 'Cliente', NULL, 'Necesito una respuesta concreta, no excusas. ¿Van a solucionar esto o no?', 0, '2026-09-30 10:42:00');
+
+-- Resto de la bandeja
+INSERT INTO mensajes (id_conversacion, remitente, id_usuario, contenido, leido, fecha_envio) VALUES
+(2, 'Cliente', NULL, 'Re: Factura del mes de agosto. Creo que hay un cargo duplicado, ¿pueden revisarlo?', 0, '2026-09-30 10:15:00'),
+(3, 'Cliente', NULL, '¿Cuándo llegará mi reembolso? Ya pasaron más de diez días hábiles.', 0, '2026-09-30 09:58:00'),
+(4, 'Cliente', NULL, 'Quiero cancelar mi suscripción hoy mismo.', 0, '2026-09-30 09:25:00'),
+(4, 'Cliente', NULL, 'Por favor confírmenme que no me van a cobrar el próximo mes.', 0, '2026-09-30 09:31:00'),
+(5, 'Cliente', NULL, 'Hola, ya recibí mi pedido, quería avisarles.', 1, '2026-09-30 08:50:00'),
+(5, 'Agente',  4,    '¡Genial, Sofía! ¿Todo llegó en buen estado?', 1, '2026-09-30 09:05:00'),
+(5, 'Cliente', NULL, 'Gracias, ¡todo está perfecto!', 1, '2026-09-30 09:10:00'),
+(6, 'Cliente', NULL, 'Consulta sobre garantía del producto que compré en julio.', 0, '2026-09-30 08:47:00'),
+(7, 'Cliente', NULL, 'El sistema no me deja iniciar sesión, me dice que mi contraseña es incorrecta.', 0, '2026-09-30 08:22:00');
+
+-- Sofía queda resuelta DESPUÉS de insertar sus mensajes
+-- (un mensaje del cliente en una conversación resuelta la reabre automáticamente)
+UPDATE conversaciones SET estado = 'Resuelto' WHERE id_conversacion = 5;
+UPDATE conversaciones SET fecha_cierre = '2026-09-30 09:15:00' WHERE id_conversacion = 5;
+
+-- Auditoría de ejemplo
+INSERT INTO auditoria (id_usuario, accion, entidad, id_entidad, detalle)
+VALUES (1, 'CREAR', 'usuario', 3, 'correo=marcos.pena@omnidesk.local; id_rol=3');
+
+-- sp y triggers pruebas
+-- =====================================================================
+-- OmniDesk · Base de datos v2 · 99 · PRUEBAS DE HUMO
+-- Ejecutar DESPUÉS de 01-07 y 08 (datos demo), preferiblemente bloque por bloque
+-- en MySQL Workbench. Cada bloque indica el resultado esperado.
+-- Estas pruebas insertan algunas filas extra (rol 'Auditor', una conversación).
+-- =====================================================================
+SET NAMES utf8mb4;
+USE omnidesk_db;
+
+-- ---------- 1. ROLES -------------------------------------------------
+CALL sp_leer_roles(NULL, @e, @t);                 SELECT @e AS err, @t AS msg;   -- 0 · 3 filas (Admin 25 permisos)
+CALL sp_insertar_rol('Auditor', 'Solo lectura', 1, @id_rol, @e, @t);
+SELECT @id_rol AS id_rol, @e AS err, @t AS msg;                                  -- 0 · id nuevo
+CALL sp_insertar_rol('auditor', NULL, 1, @x, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 1062 (único, sin distinguir mayúsculas)
+CALL sp_actualizar_rol(9999, 'Fantasma', NULL, NULL, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 404
+CALL sp_actualizar_rol(1, 'Super Admin', NULL, NULL, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 403 (rol del sistema)
+CALL sp_eliminar_rol(1, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 403
+
+-- ---------- 2. PERMISOS ---------------------------------------------
+CALL sp_asignar_permisos_rol(@id_rol, '1, 7 ,11', 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 0 · "(3 asignados)"
+CALL sp_asignar_permisos_rol(1, '1', 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 403 (Administrador intocable)
+CALL sp_leer_permisos_rol(@id_rol, @e, @t);                                      -- 25 filas, 3 con asignado = 1
+CALL sp_leer_permisos_usuario(3, @e, @t);                                        -- permisos del Agente (8 códigos)
+
+-- ---------- 3. USUARIOS y protección del último admin ----------------
+CALL sp_eliminar_usuario(1, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 409 (único admin activo)
+CALL sp_cambiar_rol_usuario(1, 3, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 409
+CALL sp_insertar_usuario(3, 'Duplicado', 'ADMIN@omnidesk.local', 'hash', NULL, NULL, 1, @uid, @e, @t);
+SELECT @uid AS id, @e AS err, @t AS msg;                                         -- 1062 (correo normalizado a minúsculas)
+CALL sp_insertar_usuario(3, 'Correo malo', 'sin-arroba', 'hash', NULL, NULL, 1, @uid, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 422
+CALL sp_actualizar_usuario(9999, 'X', 'x@x.com', NULL, NULL, NULL, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 404
+
+-- ---------- 4. ROL EN USO / ELIMINACIÓN VÁLIDA ------------------------
+CALL sp_eliminar_rol(@id_rol, 1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 0 (Auditor no tiene usuarios)
+CALL sp_leer_auditoria('rol', NULL, NULL, 10, @e, @t);                           -- CREAR, ASIGNAR_PERMISOS, ELIMINAR
+
+-- ---------- 5. CANALES / CLIENTES ------------------------------------
+CALL sp_eliminar_canal(1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 409 (tiene conversaciones)
+CALL sp_eliminar_cliente(1, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 409 (conversación sin resolver)
+CALL sp_insertar_cliente('Otro Cliente', 'MARIA.G@email.com', NULL, NULL, @cid, @e, @t);
+SELECT @cid AS id, @e AS err, @t AS msg;                                         -- 1062 (correo UNIQUE ya funciona)
+CALL sp_leer_clientes(1, NULL, NULL, @e, @t);                                    -- total_tickets=1, miembro_desde=2021, •••8901
+
+-- ---------- 6. CONVERSACIONES: triggers y ciclo de vida --------------
+CALL sp_leer_conversaciones(NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, NULL, @e, @t);
+-- solo no leídas: 1 (3 sin leer), 2, 3, 4 (2), 6, 7
+
+CALL sp_insertar_conversacion(2, 2, NULL, 'Prueba de ciclo', 'Alta', @cv, @e, @t);
+SELECT @cv AS id_conv, @e AS err, @t AS msg;                                     -- 0
+CALL sp_insertar_mensaje(@cv, 'Cliente', 'Hola, necesito ayuda', NULL, @m, @e, @t);
+CALL sp_insertar_mensaje(@cv, 'Agente', 'Con gusto, ¿en qué te ayudo?', 3, @m, @e, @t);
+SELECT fecha_primera_respuesta IS NOT NULL AS tiene_primera_resp, fecha_ultimo_mensaje IS NOT NULL AS tiene_ultimo
+FROM conversaciones WHERE id_conversacion = @cv;                                 -- 1 · 1
+
+CALL sp_actualizar_conversacion(@cv, 3, 'Resuelto', NULL, NULL, @e, @t);
+SELECT estado, fecha_cierre IS NOT NULL AS cerrada FROM conversaciones WHERE id_conversacion = @cv;  -- Resuelto · 1
+
+CALL sp_insertar_mensaje(@cv, 'Cliente', 'Una cosa más...', NULL, @m, @e, @t);
+SELECT estado, fecha_cierre IS NULL AS sin_cierre FROM conversaciones WHERE id_conversacion = @cv;   -- Abierto · 1 (reapertura)
+
+CALL sp_insertar_mensaje(@cv, 'Agente', '   ', 3, @m, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 422 (vacío)
+
+CALL sp_actualizar_sentimiento(@cv, 25, @e, @t);
+SELECT sentimiento_general FROM conversaciones WHERE id_conversacion = @cv;      -- Molesto
+CALL sp_actualizar_sentimiento(@cv, 150, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 422
+
+CALL sp_marcar_conversacion_leida(1, @n, @e, @t);
+SELECT @n AS marcados, @e AS err;                                                -- 3
+
+CALL sp_eliminar_conversacion(9999, @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 404
+
+-- ---------- 7. REPORTES ----------------------------------------------
+CALL sp_reporte_resumen(NULL, NULL, @e, @t);
+CALL sp_reporte_mensajes_por_canal(NULL, NULL, @e, @t);
+CALL sp_reporte_sentimiento(NULL, NULL, @e, @t);                                 -- siempre 3 filas
+CALL sp_reporte_rendimiento_agentes(NULL, NULL, @e, @t);
+CALL sp_reporte_volumen_diario(NULL, NULL, @e, @t);
+CALL sp_reporte_resumen('2026-12-01', '2026-01-01', @e, @t);
+SELECT @e AS err, @t AS msg;                                                     -- 422 (rango invertido)
+
