@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #031427;
+        color: #d3e4fe;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #031427;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/omnidesk-tokens.js?v=4"></script>
+</head>
+<body class="bg-background font-sans text-on-surface antialiased min-h-screen">
+<!-- Top Navigation Header -->
+<div id="app-header"></div>
+<!-- Left Sidebar -->
+<div id="app-sidebar"></div>
+<!-- Main Content Wrapper -->
+<div class="pl-64">
+<main class="w-full pt-16 bg-[#031427] min-h-screen">
+<div class="max-w-4xl mx-auto w-full px-6 md:px-10 py-8 flex flex-col gap-6">
+<!-- Breadcrumb & Page Title Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+<div>
+<h1 class="text-[26px] font-bold tracking-tight text-white">Mi Perfil</h1>
+<p class="text-[13px] text-on-surface-variant mt-0.5">Información de tu cuenta de agente y credenciales de acceso</p>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant text-[12px]">
+<span>OmniDesk</span>
+<span class="text-[#334155]">/</span>
+<span class="text-emerald-400 font-semibold">Perfil</span>
+</div>
+</div>
+<!-- Agent Identity Card -->
+<div class="bg-[#0b1c30] border border-[#1e293b] rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+<div class="flex items-center gap-5">
+<div class="relative">
+<div class="w-16 h-16 rounded-full bg-[#031427] border-2 border-emerald-accent/40 text-emerald-300 text-[20px] font-bold flex items-center justify-center shadow-inner">
+                <span id="perfil-iniciales">AG</span>
+              </div>
+<button aria-label="Cambiar foto de perfil" class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#0f233a] border border-[#1e293b] text-on-surface-variant shadow-md flex items-center justify-center hover:text-emerald-400 hover:border-emerald-accent/50 transition-colors" type="button">
+<span class="material-symbols-outlined text-[13px]">edit</span>
+</button>
+</div>
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2.5 flex-wrap">
+<h2 class="text-[17px] font-bold text-white" id="perfil-nombre">Agente General</h2>
+<span class="px-2.5 py-0.5 rounded-full bg-[#1b2b3f] text-[#bec6e0] text-[11px] font-medium border border-[#334155]">
+                  <span id="perfil-rol">Administrador</span>
+                </span>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-950/70 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-accent"></span>
+                  En línea
+                </span>
+</div>
+<p class="text-[13px] text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-tertiary">mail</span>
+                <span id="perfil-correo">agente@empresa.com</span>
+              </p>
+</div>
+</div>
+<div class="text-left sm:text-right flex flex-col sm:items-end">
+<span class="text-[11px] font-semibold text-tertiary uppercase tracking-wider">Miembro desde</span>
+<span class="text-[14px] text-white font-semibold"><span id="perfil-desde">Marzo 2023</span></span>
+</div>
+</div>
+<!-- Bloque 1: Información Personal -->
+<div class="bg-[#0b1c30] border border-[#1e293b] rounded-xl p-6 sm:p-7 flex flex-col gap-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+<div class="flex flex-col gap-1">
+<h3 class="text-[17px] font-bold text-white">Información personal</h3>
+<p class="text-[13px] text-on-surface-variant">Actualizá tus datos de contacto y zona horaria.</p>
+</div>
+<form class="flex flex-col gap-6" id="profile-info-form" onsubmit="event.preventDefault(); handleProfileSave();">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<!-- Nombre Completo -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="full-name">
+                  Nombre completo
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">person</span>
+<input class="w-full bg-[#071727] border border-[#1e293b] text-white placeholder-slate-500 text-[13px] pl-10 pr-3.5 py-2.5 rounded-lg outline-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="full-name" required="" type="text" value="Agente General"/>
+</div>
+</div>
+<!-- Correo Electrónico -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="email">
+                  Correo electrónico
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">mail</span>
+<input class="w-full bg-[#071727] border border-[#1e293b] text-white placeholder-slate-500 text-[13px] pl-10 pr-3.5 py-2.5 rounded-lg outline-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="email" readonly title="El correo solo puede cambiarlo un administrador" style="opacity:.7;cursor:not-allowed" required="" type="email" value="agente@empresa.com"/>
+</div>
+</div>
+<!-- Teléfono -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="phone">
+                  Número de teléfono
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">call</span>
+<input class="w-full bg-[#071727] border border-[#1e293b] text-white placeholder-slate-500 text-[13px] pl-10 pr-3.5 py-2.5 rounded-lg outline-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="phone" type="tel" value="+54 11 4000-0000"/>
+</div>
+<span class="text-[11px] text-tertiary">Incluí el código de área con +</span>
+</div>
+<!-- Zona Horaria -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="timezone">
+                  Zona horaria
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">schedule</span>
+<select class="w-full bg-[#071727] border border-[#1e293b] text-white text-[13px] pl-10 pr-9 py-2.5 rounded-lg outline-none appearance-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="timezone">
+<option class="bg-[#071727] text-white" selected="" value="America/Argentina/Buenos_Aires">UTC-3 · Buenos Aires</option>
+<option class="bg-[#071727] text-white" value="America/Santiago">UTC-4 · Santiago</option>
+<option class="bg-[#071727] text-white" value="America/Bogota">UTC-5 · Bogotá / Lima</option>
+<option class="bg-[#071727] text-white" value="America/Mexico_City">UTC-6 · Ciudad de México</option>
+<option class="bg-[#071727] text-white" value="Europe/Madrid">UTC+1 · Madrid</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 pointer-events-none text-tertiary text-[18px]">expand_more</span>
+</div>
+<span class="text-[11px] text-tertiary">Se usa para mostrar fechas y horarios</span>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-[#1e293b]/70">
+<p class="text-[12px] text-tertiary">Los cambios se aplicarán de inmediato.</p>
+<button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-emerald-accent hover:bg-emerald-400 text-on-primary font-semibold text-[13px] flex items-center justify-center gap-2 shadow-[0_2px_12px_rgba(16,185,129,0.3)] transition-all cursor-pointer" id="btn-save-profile" type="submit">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Guardar cambios</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Bloque 2: Seguridad -->
+<div class="bg-[#0b1c30] border border-[#1e293b] rounded-xl p-6 sm:p-7 flex flex-col gap-6 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-emerald-accent/15 border border-emerald-accent/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-accent text-[20px]">lock</span>
+</div>
+<div>
+<h3 class="text-[17px] font-bold text-white">Seguridad</h3>
+<p class="text-[13px] text-on-surface-variant">Actualizá tu contraseña con regularidad para mantener tu cuenta segura.</p>
+</div>
+</div>
+<form class="flex flex-col gap-5" id="security-password-form" onsubmit="event.preventDefault(); handlePasswordChange();">
+<!-- Contraseña Actual -->
+<div class="flex flex-col gap-1.5 max-w-xl">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="current-password">
+                Contraseña actual
+              </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">lock_reset</span>
+<input class="w-full bg-[#071727] border border-[#1e293b] text-white placeholder-slate-500 text-[13px] pl-10 pr-10 py-2.5 rounded-lg outline-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="current-password" placeholder="Tu contraseña actual" required="" type="password"/>
+<button aria-label="Mostrar contraseña" class="absolute right-3 text-tertiary hover:text-white transition-colors" onclick="togglePasswordVisibility('current-password', this)" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<!-- Nueva Contraseña -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="new-password">
+                  Nueva contraseña
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">key</span>
+<input class="w-full bg-[#071727] border border-[#1e293b] text-white placeholder-slate-500 text-[13px] pl-10 pr-10 py-2.5 rounded-lg outline-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="new-password" minlength="8" placeholder="Nueva contraseña" required="" type="password"/>
+<button aria-label="Mostrar contraseña" class="absolute right-3 text-tertiary hover:text-white transition-colors" onclick="togglePasswordVisibility('new-password', this)" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<span class="text-[11px] text-tertiary">Mínimo 8 caracteres</span>
+</div>
+<!-- Confirmar Contraseña -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold" for="confirm-password">
+                  Confirmar contraseña
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-tertiary text-[18px]">check_circle</span>
+<input class="w-full bg-[#071727] border border-[#1e293b] text-white placeholder-slate-500 text-[13px] pl-10 pr-10 py-2.5 rounded-lg outline-none focus:border-emerald-accent/70 focus:ring-1 focus:ring-emerald-accent/70 transition-all" id="confirm-password" minlength="8" placeholder="Repetir contraseña" required="" type="password"/>
+<button aria-label="Mostrar contraseña" class="absolute right-3 text-tertiary hover:text-white transition-colors" onclick="togglePasswordVisibility('confirm-password', this)" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-[#1e293b]/70">
+<p class="text-[12px] text-tertiary">Se cerrará la sesión en otros dispositivos.</p>
+<button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#0f233a] hover:bg-emerald-accent hover:text-on-primary text-emerald-400 border border-emerald-500/30 hover:border-transparent font-semibold text-[13px] flex items-center justify-center gap-2 transition-all cursor-pointer" id="btn-save-pwd" type="submit">
+<span class="material-symbols-outlined text-[18px]">sync_lock</span>
+<span>Cambiar contraseña</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Bloque 3: Zona de Peligro -->
+<div class="bg-red-950/20 border border-red-900/40 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+<div class="flex flex-col gap-1">
+<h4 class="text-[15px] font-bold text-red-400 flex items-center gap-2">
+<span class="material-symbols-outlined text-[19px]">warning</span>
+              Zona de peligro
+            </h4>
+<p class="text-[13px] text-on-surface-variant">Estas acciones son irreversibles. Procedé con cuidado.</p>
+</div>
+<button class="w-full sm:w-auto px-4 py-2 rounded-lg bg-transparent hover:bg-red-500/10 text-red-400 border border-red-500/40 font-medium text-[13px] transition-all cursor-pointer whitespace-nowrap" onclick="confirmDeactivation()" type="button">
+            Desactivar cuenta
+          </button>
+</div>
+</div>
+</main>
+</div>
+<script>
+    function togglePasswordVisibility(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    const $ = id => document.getElementById(id);
+    async function call(ruta, op) {
+      let r; try { r = await OmniDesk.api(ruta, op); } catch { return { err: 503, text: "No se pudo conectar con el servidor. ¿Está encendido (npm start)?" }; }
+      if (!r) return { err: 401, text: "Tu sesión expiró." };
+      if (r.ok) return { err: 0, datos: r.datos };
+      const e = r.datos.error || {}; return { err: e.codigo || r.status, text: e.mensaje || "Error inesperado." };
+    }
+    function toast(res, texto) {
+      let t = $("toast");
+      if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+      t.textContent = texto || res.text;
+      t.className = "fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium " +
+        (res.err ? "bg-error-container/80 border-error/40 text-error" : "bg-primary-container border-primary/40 text-primary-light");
+      clearTimeout(t._t); t._t = setTimeout(() => t.classList.add("hidden"), 3500);
+    }
+    const ZONAS_ANTIGUAS = { "UTC-3": "America/Argentina/Buenos_Aires", "UTC-4": "America/Santiago", "UTC-5": "America/Bogota", "UTC-6": "America/Mexico_City", "UTC+1": "Europe/Madrid" };
+
+    async function cargarPerfil() {
+      const r = await call("/api/perfil"); if (r.err) { toast(r); return; }
+      const u = r.datos.usuario;
+      $("perfil-iniciales").textContent = u.nombre_completo.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+      $("perfil-nombre").textContent = u.nombre_completo;
+      $("perfil-rol").textContent = u.rol;
+      $("perfil-correo").textContent = u.correo;
+      const d = new Date(u.fecha_alta).toLocaleDateString("es-MX", { month: "long", year: "numeric" });
+      $("perfil-desde").textContent = d.charAt(0).toUpperCase() + d.slice(1);
+      $("full-name").value = u.nombre_completo; $("email").value = u.correo; $("phone").value = u.telefono || "";
+      const z = ZONAS_ANTIGUAS[u.zona_horaria] || u.zona_horaria;
+      if ([...$("timezone").options].some(o => o.value === z)) $("timezone").value = z;
+    }
+
+    async function handleProfileSave() {
+      const btn = $("btn-save-profile"), original = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Guardando...</span>';
+      btn.disabled = true;
+      const r = await call("/api/perfil", { method: "PUT", body: { nombre: $("full-name").value, telefono: $("phone").value, zona_horaria: $("timezone").value } });
+      btn.innerHTML = original; btn.disabled = false;
+      toast(r, r.err ? r.text : r.datos.mensaje);
+      if (r.err) return;
+      OmniDesk._datos.usuario.nombre = $("full-name").value.trim();           // mantener la sesión local al día
+      localStorage.setItem("omnidesk_sesion", JSON.stringify(OmniDesk._datos));
+      cargarPerfil();
+    }
+
+    async function handlePasswordChange() {
+      if ($("new-password").value !== $("confirm-password").value) { toast({ err: 1 }, "Las nuevas contraseñas no coinciden."); return; }
+      const btn = $("btn-save-pwd"), original = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Actualizando...</span>';
+      btn.disabled = true;
+      const r = await call("/api/perfil/password", { method: "POST", body: { actual: $("current-password").value, nueva: $("new-password").value } });
+      btn.innerHTML = original; btn.disabled = false;
+      toast(r, r.err ? r.text : r.datos.mensaje);
+      if (!r.err) $("security-password-form").reset();
+    }
+
+    function confirmDeactivation() {
+      alert('Para desactivar tu cuenta, pídeselo a un administrador: lo hace desde Configuración → Agentes.');
+    }
+  </script>
+<script src="assets/omnidesk-layout.js?v=4"></script>
+<script>OmniDesk.mount({ seccion: "configuracion", sub: "perfil" });</script>
+<script>cargarPerfil();</script>
+</body></html>

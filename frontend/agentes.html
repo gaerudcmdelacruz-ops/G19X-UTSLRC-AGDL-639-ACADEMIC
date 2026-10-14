@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/omnidesk-tokens.js?v=4"></script>
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased min-h-screen">
+<!-- Top Navigation Header -->
+<div id="app-header"></div>
+<!-- Sidebar Navigation -->
+<div id="app-sidebar"></div>
+<!-- Main Workspace Area -->
+<div class="pl-64">
+<main class="w-full pt-16 bg-surface min-h-screen">
+<div class="p-6 md:p-8 max-w-6xl mx-auto w-full flex flex-col gap-6">
+<!-- Top Title & Breadcrumbs -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div>
+<h1 class="text-2xl font-bold text-white tracking-tight">Gestión de Agentes</h1>
+<p class="text-sm text-tertiary mt-1">Agregá y administrá los usuarios con acceso al sistema operativo de soporte.</p>
+</div>
+<div class="flex items-center gap-2 text-xs text-tertiary bg-surface-container-low border border-surface-container-high px-3.5 py-1.5 rounded-full shadow-inner self-start md:self-auto">
+<span class="hover:text-primary transition-colors cursor-pointer">OmniDesk</span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface font-semibold text-emerald-400">Agentes</span>
+</div>
+</div>
+<!-- Registration Form Card -->
+<section class="bg-surface-container-low border border-surface-container-high rounded-xl p-6 shadow-sm flex flex-col gap-5">
+<div class="flex items-center justify-between pb-1 border-b border-surface-container-high/60">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container border border-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<h2 class="text-base font-semibold text-white">Registrar nuevo agente</h2>
+</div>
+<span class="text-xs text-emerald-400/90 bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              Licencia disponible
+            </span>
+</div>
+<form class="flex flex-col gap-5" id="agent-form">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Nombre Completo -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-semibold text-tertiary uppercase tracking-wider" for="agent-name">
+                  Nombre Completo
+                </label>
+<div class="relative">
+<input class="w-full bg-[#071727] text-white text-sm px-3.5 py-2.5 rounded-lg border border-surface-container-highest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-tertiary/40" id="agent-name" placeholder="Ej: Ana González" required="" type="text"/>
+</div>
+</div>
+<!-- Correo Electrónico -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-semibold text-tertiary uppercase tracking-wider" for="agent-email">
+                  Correo Electrónico
+                </label>
+<div class="relative">
+<input class="w-full bg-[#071727] text-white text-sm px-3.5 py-2.5 rounded-lg border border-surface-container-highest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-tertiary/40" id="agent-email" placeholder="agente@empresa.com" required="" type="email"/>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-semibold text-tertiary uppercase tracking-wider" for="agent-password">Contraseña inicial</label>
+<input class="w-full bg-[#071727] text-white text-sm px-3.5 py-2.5 rounded-lg border border-surface-container-highest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-tertiary/40" id="agent-password" type="password" autocomplete="new-password" minlength="8" placeholder="Mínimo 8 caracteres">
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+<!-- Selector Rol -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-semibold text-tertiary uppercase tracking-wider" for="agent-role">
+                  Rol
+                </label>
+<div class="relative flex items-center">
+<select class="w-full appearance-none bg-[#071727] text-white text-sm px-3.5 py-2.5 rounded-lg border border-surface-container-highest focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer transition-all pr-10" id="agent-role">
+<option value="Agente">Agente</option>
+<option value="Administrador">Administrador</option>
+<option value="Supervisor">Supervisor</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 pointer-events-none text-tertiary text-[20px]">
+                    unfold_more
+                  </span>
+</div>
+</div>
+<!-- CTA Button -->
+<div class="flex justify-end">
+<button class="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-[#10b981] hover:bg-[#0ea372] text-[#002113] font-semibold text-sm px-5 py-2.5 rounded-lg shadow-[0_2px_12px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.35)] transition-all active:scale-[0.98] cursor-pointer" type="submit">
+<span class="material-symbols-outlined text-[18px]">person_check</span>
+<span>Guardar agente</span>
+</button>
+</div>
+</div>
+</form>
+</section>
+<!-- Registered Agents Table Card -->
+<section class="bg-surface-container-low border border-surface-container-high rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Table Header Bar -->
+<div class="px-6 py-4 flex items-center justify-between border-b border-surface-container-high bg-surface-container-low">
+<div class="flex items-center gap-3">
+<h2 class="text-base font-semibold text-white">Agentes registrados</h2>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container text-tertiary border border-surface-container-high" id="agent-count-badge">
+                5 registros
+              </span>
+</div>
+<div class="flex items-center gap-2 text-tertiary text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#10b981]"></span>
+<span class="text-on-surface-variant"><span id="agent-online">0</span> en línea actualmente</span>
+</div>
+</div>
+<!-- Data Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-tertiary/80 text-[11px] uppercase tracking-wider border-b border-surface-container-high">
+<th class="py-3 px-6 font-semibold" scope="col">Agente</th>
+<th class="py-3 px-4 font-semibold" scope="col">Correo</th>
+<th class="py-3 px-4 font-semibold" scope="col">Rol</th>
+<th class="py-3 px-4 font-semibold" scope="col">Estado</th>
+<th class="py-3 px-4 font-semibold" scope="col">Alta</th>
+<th class="py-3 px-6 text-right font-semibold" scope="col">
+<span class="sr-only">Acciones</span>
+</th>
+</tr>
+</thead>
+<tbody class="text-sm text-on-surface divide-y divide-surface-container-high/60" id="agent-table-body">
+<!-- Row 1: Laura Vega -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-3.5 px-6">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest border border-surface-container-high text-primary-light flex items-center justify-center font-bold text-xs shadow-sm">
+                        LV
+                      </div>
+<div class="flex flex-col">
+<span class="font-medium text-white leading-snug">Laura Vega</span>
+<span class="text-tertiary text-xs md:hidden">laura.vega@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    laura.vega@empresa.com
+                  </td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container-highest text-white border border-surface-container-high">
+                      Administrador
+                    </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_#10b981]"></span>
+                      Activo
+                    </span>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    12/01/2024
+                  </td>
+<td class="py-3.5 px-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded text-tertiary hover:text-white hover:bg-surface-container transition-colors cursor-pointer" title="Editar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1 rounded text-tertiary hover:text-rose-400 hover:bg-rose-950/20 transition-colors cursor-pointer" onclick="deleteAgent(this)" title="Eliminar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Marcos Díaz -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-3.5 px-6">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest border border-surface-container-high text-tertiary flex items-center justify-center font-bold text-xs shadow-sm">
+                        MD
+                      </div>
+<div class="flex flex-col">
+<span class="font-medium text-white leading-snug">Marcos Díaz</span>
+<span class="text-tertiary text-xs md:hidden">marcos.diaz@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    marcos.diaz@empresa.com
+                  </td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container text-tertiary border border-surface-container-high">
+                      Agente
+                    </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_#10b981]"></span>
+                      Activo
+                    </span>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    03/03/2024
+                  </td>
+<td class="py-3.5 px-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded text-tertiary hover:text-white hover:bg-surface-container transition-colors cursor-pointer" title="Editar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1 rounded text-tertiary hover:text-rose-400 hover:bg-rose-950/20 transition-colors cursor-pointer" onclick="deleteAgent(this)" title="Eliminar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Romina Suárez -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-3.5 px-6">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest border border-surface-container-high text-tertiary flex items-center justify-center font-bold text-xs shadow-sm">
+                        RS
+                      </div>
+<div class="flex flex-col">
+<span class="font-medium text-white leading-snug">Romina Suárez</span>
+<span class="text-tertiary text-xs md:hidden">romina.s@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    romina.s@empresa.com
+                  </td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container text-tertiary border border-surface-container-high">
+                      Agente
+                    </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_#10b981]"></span>
+                      Activo
+                    </span>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    15/05/2024
+                  </td>
+<td class="py-3.5 px-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded text-tertiary hover:text-white hover:bg-surface-container transition-colors cursor-pointer" title="Editar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1 rounded text-tertiary hover:text-rose-400 hover:bg-rose-950/20 transition-colors cursor-pointer" onclick="deleteAgent(this)" title="Eliminar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Pablo Moreno -->
+<tr class="hover:bg-surface-container/60 transition-colors group opacity-75">
+<td class="py-3.5 px-6">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container border border-surface-container-high text-tertiary/70 flex items-center justify-center font-bold text-xs shadow-sm">
+                        PM
+                      </div>
+<div class="flex flex-col">
+<span class="font-medium text-white/90 leading-snug">Pablo Moreno</span>
+<span class="text-tertiary text-xs md:hidden">pablo.m@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    pablo.m@empresa.com
+                  </td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container text-tertiary border border-surface-container-high">
+                      Agente
+                    </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-tertiary/80">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                      Inactivo
+                    </span>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    22/07/2024
+                  </td>
+<td class="py-3.5 px-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded text-tertiary hover:text-white hover:bg-surface-container transition-colors cursor-pointer" title="Editar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1 rounded text-tertiary hover:text-rose-400 hover:bg-rose-950/20 transition-colors cursor-pointer" onclick="deleteAgent(this)" title="Eliminar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Natalia Rojas -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-3.5 px-6">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest border border-surface-container-high text-tertiary flex items-center justify-center font-bold text-xs shadow-sm">
+                        NR
+                      </div>
+<div class="flex flex-col">
+<span class="font-medium text-white leading-snug">Natalia Rojas</span>
+<span class="text-tertiary text-xs md:hidden">n.rojas@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    n.rojas@empresa.com
+                  </td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container text-tertiary border border-surface-container-high">
+                      Agente
+                    </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_#10b981]"></span>
+                      Activo
+                    </span>
+</td>
+<td class="py-3.5 px-4 text-tertiary text-xs">
+                    01/09/2024
+                  </td>
+<td class="py-3.5 px-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded text-tertiary hover:text-white hover:bg-surface-container transition-colors cursor-pointer" title="Editar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1 rounded text-tertiary hover:text-rose-400 hover:bg-rose-950/20 transition-colors cursor-pointer" onclick="deleteAgent(this)" title="Eliminar agente" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer Info -->
+<div class="px-6 py-3.5 bg-surface-container-lowest/80 border-t border-surface-container-high flex flex-col sm:flex-row items-center justify-between text-tertiary text-xs gap-3">
+<span>Mostrando todos los agentes activos en el espacio de trabajo</span>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 rounded bg-surface-container border border-surface-container-high text-on-surface hover:text-white hover:bg-surface-container-highest transition-colors disabled:opacity-40 cursor-pointer" disabled="" type="button">Anterior</button>
+<span class="px-2 font-semibold text-white">Página 1 de 1</span>
+<button class="px-2.5 py-1 rounded bg-surface-container border border-surface-container-high text-on-surface hover:text-white hover:bg-surface-container-highest transition-colors disabled:opacity-40 cursor-pointer" disabled="" type="button">Siguiente</button>
+</div>
+</div>
+</section>
+<!-- RBAC Info Card with Emerald Accent -->
+<div class="p-5 rounded-xl bg-surface-container-low border border-primary/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_2px_14px_rgba(16,185,129,0.06)] relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex items-center gap-3.5 pl-1">
+<div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white">Control de acceso y permisos RBAC</h3>
+<p class="text-xs text-tertiary mt-0.5">Los administradores poseen acceso a facturación, métricas consolidadas y configuración general de la cuenta.</p>
+</div>
+</div>
+<a class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold hover:text-emerald-300 transition-colors whitespace-nowrap self-start sm:self-auto pl-1 sm:pl-0" href="roles.html">
+<span>Documentación de roles</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</main>
+</div>
+<script src="assets/omnidesk-layout.js?v=4"></script>
+<script>OmniDesk.mount({ permiso: "agentes.ver", seccion: "configuracion", sub: "agentes" });</script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let ROLES = [], USERS = [];
+function rolPorDefecto() { const r = ROLES.find(x => x.nombre === "Agente"); if (r) $("agent-role").value = r.id_rol; }
+
+async function call(ruta, op) {
+  let r; try { r = await OmniDesk.api(ruta, op); } catch { return { err: 503, text: "No se pudo conectar con el servidor. ¿Está encendido (npm start)?" }; }
+  if (!r) return { err: 401, text: "Tu sesión expiró." };
+  if (r.ok) return { err: 0, datos: r.datos };
+  const e = r.datos.error || {}; return { err: e.codigo || r.status, text: e.mensaje || "Error inesperado." };
+}
+function toast(res, texto) {
+  let t = $("toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.textContent = texto || res.text;
+  t.className = "fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium " +
+    (res.err ? "bg-error-container/80 border-error/40 text-error" : "bg-primary-container border-primary/40 text-primary-light");
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+function filas() {
+  const ed = OmniDesk.can("agentes.editar"), des = OmniDesk.can("agentes.desactivar");
+  $("agent-count-badge").textContent = USERS.length + " registros";
+  $("agent-online").textContent = USERS.filter(u => u.estado === "Activo" && u.presencia === "Disponible").length;
+  $("agent-table-body").innerHTML = USERS.map(u => {
+    const act = u.estado === "Activo";
+    const ini = u.nombre_completo.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+    const opciones = ROLES.some(r => r.id_rol === u.id_rol) ? ROLES : [...ROLES, { id_rol: u.id_rol, nombre: u.rol }];
+    const rol = ed
+      ? `<select data-rol="${u.id_usuario}" aria-label="Rol de ${esc(u.nombre_completo)}" class="min-w-[10rem] bg-[#071727] text-white text-xs px-2 py-1 rounded border border-surface-container-highest">${opciones.map(r => `<option value="${r.id_rol}" ${r.id_rol === u.id_rol ? "selected" : ""}>${esc(r.nombre)}</option>`).join("")}</select>`
+      : `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container-highest text-white border border-surface-container-high">${esc(u.rol)}</span>`;
+    const accion = act ? (des ? `<button data-des="${u.id_usuario}" class="text-xs font-medium text-error hover:underline">Desactivar</button>` : "")
+                       : (ed ? `<button data-rea="${u.id_usuario}" class="text-xs font-medium text-primary-light hover:underline">Reactivar</button>` : "");
+    return `<tr class="hover:bg-surface-container/60 transition-colors ${act ? "" : "opacity-60"}">
+      <td class="py-3.5 px-6"><div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-primary/20 border border-primary/30 text-primary flex items-center justify-center font-bold text-xs">${esc(ini)}</div>
+        <span class="font-medium text-white leading-snug">${esc(u.nombre_completo)}</span></div></td>
+      <td class="py-3.5 px-4 text-tertiary text-xs">${esc(u.correo)}</td>
+      <td class="py-3.5 px-4">${rol}</td>
+      <td class="py-3.5 px-4"><span class="inline-flex items-center gap-1.5 text-xs font-medium ${act ? "text-emerald-400" : "text-tertiary"}"><span class="w-1.5 h-1.5 rounded-full ${act ? "bg-primary" : "bg-outline"}"></span>${u.estado}</span></td>
+      <td class="py-3.5 px-4 text-tertiary text-xs font-mono">${new Date(u.fecha_alta).toLocaleDateString("es-MX")}</td>
+      <td class="py-3.5 px-6 text-right">${accion}</td></tr>`;
+  }).join("") || `<tr><td colspan="6" class="py-6 px-6 text-sm text-tertiary">No hay agentes registrados.</td></tr>`;
+}
+
+async function cargar() {
+  const r = await call("/api/usuarios");
+  if (r.err) { toast(r); return; }
+  USERS = r.datos.usuarios; filas();
+}
+
+$("agent-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const r = await call("/api/usuarios", { method: "POST", body: {
+    nombre: $("agent-name").value, correo: $("agent-email").value,
+    password: $("agent-password").value, id_rol: Number($("agent-role").value) } });
+  toast(r, r.err ? r.text : r.datos.mensaje);
+  if (r.err) return;
+  $("agent-form").reset(); rolPorDefecto(); await cargar();
+});
+
+$("agent-table-body").addEventListener("change", async e => {
+  const sel = e.target.closest("select[data-rol]"); if (!sel) return;
+  const r = await call("/api/usuarios/" + sel.dataset.rol + "/rol", { method: "PUT", body: { id_rol: Number(sel.value) } });
+  toast(r, r.err ? r.text : r.datos.mensaje); await cargar();      // recargar también revierte el selector si hubo error
+});
+$("agent-table-body").addEventListener("click", async e => {
+  const des = e.target.closest("[data-des]"), rea = e.target.closest("[data-rea]");
+  if (des) {
+    const u = USERS.find(x => x.id_usuario === Number(des.dataset.des));
+    if (!confirm(`¿Desactivar a ${u.nombre_completo}? Sus conversaciones abiertas volverán a la cola sin asignar.`)) return;
+    const r = await call("/api/usuarios/" + u.id_usuario, { method: "DELETE" });
+    toast(r, r.err ? r.text : r.datos.mensaje); await cargar();
+  }
+  if (rea) {
+    const u = USERS.find(x => x.id_usuario === Number(rea.dataset.rea));
+    const r = await call("/api/usuarios/" + u.id_usuario, { method: "PUT", body: { nombre: u.nombre_completo, correo: u.correo, telefono: u.telefono, zona_horaria: u.zona_horaria, estado: "Activo" } });
+    toast(r, r.err ? r.text : r.datos.mensaje); await cargar();
+  }
+});
+
+(async function iniciar() {
+  if (!OmniDesk.can("agentes.crear")) $("agent-form").closest("section").classList.add("hidden");
+  const [rr] = await Promise.all([call("/api/roles-asignables"), cargar()]);
+  if (rr.err) { toast(rr); return; }
+  ROLES = rr.datos.roles;
+  $("agent-role").innerHTML = ROLES.map(r => `<option value="${r.id_rol}">${esc(r.nombre)}</option>`).join("");
+  rolPorDefecto(); filas();
+})();
+</script>
+</body></html>

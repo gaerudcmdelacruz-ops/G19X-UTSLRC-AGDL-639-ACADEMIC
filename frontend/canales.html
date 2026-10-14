@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/omnidesk-tokens.js?v=4"></script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #031427;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-white">
+<!-- Header / Navigation superior -->
+<div id="app-header"></div>
+<!-- Sidebar / Barra lateral de configuración -->
+<div id="app-sidebar"></div>
+<!-- Main Content Wrapper -->
+<div class="pl-64">
+<main class="w-full pt-16 bg-surface min-h-screen">
+<div class="flex flex-col w-full">
+<!-- Top Bar / Breadcrumbs Bar -->
+<div class="w-full bg-[#000f21]/60 border-b border-[#1e293b] px-space-2xl py-space-xl flex items-center justify-between">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-white font-bold tracking-tight">Canales</h1>
+<p class="font-body-sm text-tertiary mt-1">Administrá las integraciones activas del sistema.</p>
+</div>
+<div class="flex items-center gap-space-xs font-label-md text-tertiary select-none text-xs">
+<span class="hover:text-primary cursor-pointer transition-colors">OmniDesk</span>
+<span>/</span>
+<span class="text-white font-semibold">Canales</span>
+</div>
+</div>
+<!-- Content Stage -->
+<div id="canales-lista" class="w-full max-w-5xl mx-auto px-space-2xl py-space-2xl flex flex-col gap-4">
+<!-- Channel Item 1: WhatsApp Business -->
+<div class="group bg-[#0b1c30] hover:bg-[#0f233a] border border-[#1e293b] transition-all duration-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-base">
+<div class="flex items-center gap-4">
+<!-- Initial circular icon badge - Green -->
+<div class="w-12 h-12 rounded-xl bg-[#10b981]/15 border border-[#10b981]/30 text-[#4edea3] flex items-center justify-center font-headline-sm text-lg font-bold shadow-sm shrink-0">
+                W
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-[15px] text-white font-semibold tracking-tight">WhatsApp Business</span>
+</div>
+<span class="font-body-sm text-xs text-tertiary mt-0.5">API oficial · +54 11 9999-8888</span>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-space-xl pt-2 sm:pt-0">
+<!-- Status indicator -->
+<div class="flex items-center gap-2 font-label-md text-xs font-medium text-[#4edea3]">
+<span class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span>
+<span>Activo</span>
+</div>
+<!-- Action Button -->
+<button class="px-4 py-2 rounded-lg bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface border border-[#1e293b] transition-colors font-label-md text-xs font-medium" type="button">
+                Configurar
+              </button>
+</div>
+</div>
+<!-- Channel Item 2: Correo Electrónico -->
+<div class="group bg-[#0b1c30] hover:bg-[#0f233a] border border-[#1e293b] transition-all duration-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-base">
+<div class="flex items-center gap-4">
+<!-- Initial circular icon badge - Soft Blue -->
+<div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center font-headline-sm text-lg font-bold shadow-sm shrink-0">
+                C
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-[15px] text-white font-semibold tracking-tight">Correo Electrónico</span>
+</div>
+<span class="font-body-sm text-xs text-tertiary mt-0.5">soporte@empresa.com · IMAP/SMTP</span>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-space-xl pt-2 sm:pt-0">
+<div class="flex items-center gap-2 font-label-md text-xs font-medium text-[#4edea3]">
+<span class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span>
+<span>Activo</span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface border border-[#1e293b] transition-colors font-label-md text-xs font-medium" type="button">
+                Configurar
+              </button>
+</div>
+</div>
+<!-- Channel Item 3: Web Chat -->
+<div class="group bg-[#0b1c30] hover:bg-[#0f233a] border border-[#1e293b] transition-all duration-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-base">
+<div class="flex items-center gap-4">
+<!-- Initial circular icon badge - Violet / Emerald hint -->
+<div class="w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center font-headline-sm text-lg font-bold shadow-sm shrink-0">
+                W
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-[15px] text-white font-semibold tracking-tight">Web Chat</span>
+</div>
+<span class="font-body-sm text-xs text-tertiary mt-0.5">Widget embebido · empresa.com</span>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-space-xl pt-2 sm:pt-0">
+<div class="flex items-center gap-2 font-label-md text-xs font-medium text-[#4edea3]">
+<span class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span>
+<span>Activo</span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface border border-[#1e293b] transition-colors font-label-md text-xs font-medium" type="button">
+                Configurar
+              </button>
+</div>
+</div>
+<!-- Channel Item 4: Instagram DM -->
+<div class="group bg-[#0b1c30] hover:bg-[#0f233a] border border-[#1e293b] transition-all duration-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-base">
+<div class="flex items-center gap-4">
+<!-- Initial circular icon badge - Soft Pink -->
+<div class="w-12 h-12 rounded-xl bg-pink-500/15 border border-pink-500/30 text-pink-400 flex items-center justify-center font-headline-sm text-lg font-bold shadow-sm shrink-0">
+                I
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-[15px] text-white font-semibold tracking-tight">Instagram DM</span>
+</div>
+<span class="font-body-sm text-xs text-[#86948a] mt-0.5">No conectado</span>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-space-xl pt-2 sm:pt-0">
+<div class="flex items-center gap-2 font-label-md text-xs font-medium text-[#86948a]">
+<span class="w-2 h-2 rounded-full bg-[#3c4a42]"></span>
+<span>Inactivo</span>
+</div>
+<button class="px-5 py-2 rounded-lg bg-[#10b981] hover:bg-[#059669] text-white font-label-md text-xs font-semibold shadow-[0_2px_10px_rgba(16,185,129,0.3)] transition-all" type="button">
+                Conectar
+              </button>
+</div>
+</div>
+<!-- Quick Insights / Banner inferior de sincronización en tiempo real -->
+<div class="mt-4 p-5 rounded-xl bg-[#0b1c30] border border-[#1e293b] relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-space-base">
+<!-- Left accent border glow -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#10b981]"></div>
+<div class="flex items-center gap-4 pl-1">
+<div class="w-10 h-10 rounded-lg bg-[#10b981]/15 border border-[#10b981]/30 flex items-center justify-center text-[#4edea3] shrink-0">
+<span class="material-symbols-outlined text-[22px]">sync_saved_locally</span>
+</div>
+<div>
+<p class="font-headline-sm text-[14px] text-white font-semibold">Sincronización en tiempo real activa</p>
+<p class="font-body-sm text-xs text-tertiary mt-0.5">Todos los webhooks operativos con latencia promedio de 42ms.</p>
+</div>
+</div>
+<div class="flex items-center gap-space-base md:self-center self-end pl-1 md:pl-0">
+<div class="flex flex-col md:text-right">
+<span class="font-label-sm text-[10px] uppercase tracking-wider text-[#86948a] font-semibold">Capacidad de eventos</span>
+<span class="font-headline-sm text-base text-[#4edea3] font-bold">99.98% uptime</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script src="assets/omnidesk-layout.js?v=4"></script>
+<script>OmniDesk.mount({ permiso: "canales.ver", seccion: "configuracion", sub: "canales" });</script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let CANALES = [], editando = null;
+
+async function call(ruta, op) {
+  let r; try { r = await OmniDesk.api(ruta, op); } catch { return { err: 503, text: "No se pudo conectar con el servidor. ¿Está encendido (npm start)?" }; }
+  if (!r) return { err: 401, text: "Tu sesión expiró." };
+  if (r.ok) return { err: 0, datos: r.datos };
+  const e = r.datos.error || {}; return { err: e.codigo || r.status, text: e.mensaje || "Error inesperado." };
+}
+function toast(res, texto) {
+  let t = $("toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.textContent = texto || res.text;
+  t.className = "fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium " +
+    (res.err ? "bg-error-container/80 border-error/40 text-error" : "bg-primary-container border-primary/40 text-primary-light");
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+function pintar() {
+  const gest = OmniDesk.can("canales.gestionar");
+  const nuevo = gest ? `<div class="flex justify-end"><button id="btn-nuevo-canal" type="button" class="px-4 py-2 rounded-lg bg-primary text-surface font-semibold text-xs hover:opacity-90">+ Nuevo canal</button></div>` : "";
+  $("canales-lista").innerHTML = nuevo + (CANALES.map(c => {
+    const act = c.estado === "Activo", col = /^#[0-9a-fA-F]{6}$/.test(c.color_hex || "") ? c.color_hex : "#10b981";
+    const botones = gest ? `
+      <button data-conf="${c.id_canal}" type="button" class="px-4 py-2 rounded-lg bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface border border-[#1e293b] transition-colors text-xs font-medium">Configurar</button>
+      <button data-estado="${c.id_canal}" type="button" class="px-4 py-2 rounded-lg text-xs font-medium border transition-colors ${act ? "border-red-500/40 text-red-400 hover:bg-red-500/10" : "bg-primary text-surface border-primary hover:opacity-90"}">${act ? "Desactivar" : "Conectar"}</button>` : "";
+    return `<div class="bg-[#0b1c30] border border-[#1e293b] rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${act ? "" : "opacity-70"}">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl border flex items-center justify-center text-lg font-bold shrink-0" style="background:${col}26;border-color:${col}4d;color:${col}">${esc(c.nombre.charAt(0).toUpperCase())}</div>
+        <div class="flex flex-col"><span class="text-[15px] text-white font-semibold tracking-tight">${esc(c.nombre)}</span>
+          <span class="text-xs text-tertiary mt-0.5">${esc(c.descripcion || "Sin descripción")} · ${c.total_conversaciones} conversaciones</span></div></div>
+      <div class="flex items-center justify-between sm:justify-end gap-4">
+        <div class="flex items-center gap-2 text-xs font-medium ${act ? "text-[#4edea3]" : "text-tertiary"}"><span class="w-2 h-2 rounded-full ${act ? "bg-[#10b981]" : "bg-outline"}"></span><span>${c.estado}</span></div>
+        ${botones}</div></div>`;
+  }).join("") || `<p class="text-sm text-tertiary">No hay canales registrados.</p>`);
+}
+async function cargar() { const r = await call("/api/canales"); if (r.err) { toast(r); return; } CANALES = r.datos.canales; pintar(); }
+
+/* Modal crear / configurar */
+function modal() {
+  if ($("modal-canal")) return;
+  document.body.insertAdjacentHTML("beforeend", `
+  <div id="modal-canal" class="hidden fixed inset-0 z-[60] bg-black/60 items-center justify-center p-4">
+    <form id="form-canal" class="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container p-6 space-y-4">
+      <h2 id="mc-titulo" class="text-lg font-bold text-white"></h2>
+      <label class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Nombre
+        <input id="mc-nombre" maxlength="50" class="mt-1 w-full rounded-lg bg-input-bg border border-outline-variant px-3 py-2 text-sm normal-case font-normal text-on-surface focus:outline-none focus:border-primary"></label>
+      <label class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Descripción
+        <input id="mc-desc" maxlength="150" class="mt-1 w-full rounded-lg bg-input-bg border border-outline-variant px-3 py-2 text-sm normal-case font-normal text-on-surface focus:outline-none focus:border-primary"></label>
+      <label class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Color
+        <input id="mc-color" type="color" value="#10b981" class="h-9 w-14 rounded bg-transparent border border-outline-variant"></label>
+      <div class="flex justify-between pt-2">
+        <button type="button" id="mc-eliminar" class="px-3 py-2 rounded-lg text-sm text-error hover:bg-error-container/30">Eliminar canal</button>
+        <div class="flex gap-2"><button type="button" id="mc-cancelar" class="px-4 py-2 rounded-lg text-sm text-tertiary hover:bg-surface-container-high">Cancelar</button>
+          <button class="px-4 py-2 rounded-lg bg-primary text-surface text-sm font-semibold">Guardar</button></div></div>
+    </form></div>`);
+  $("mc-cancelar").onclick = cerrar;
+  $("modal-canal").addEventListener("click", e => { if (e.target.id === "modal-canal") cerrar(); });
+  $("form-canal").addEventListener("submit", guardar);
+  $("mc-eliminar").onclick = eliminar;
+}
+const cerrar = () => $("modal-canal").classList.replace("flex", "hidden");
+function abrir(c) {
+  modal(); editando = c || null;
+  $("mc-titulo").textContent = c ? "Configurar canal" : "Nuevo canal";
+  $("mc-nombre").value = c ? c.nombre : ""; $("mc-desc").value = c ? (c.descripcion || "") : "";
+  $("mc-color").value = c && /^#[0-9a-fA-F]{6}$/.test(c.color_hex || "") ? c.color_hex : "#10b981";
+  $("mc-eliminar").classList.toggle("hidden", !c);
+  $("modal-canal").classList.replace("hidden", "flex"); $("mc-nombre").focus();
+}
+async function guardar(e) {
+  e.preventDefault();
+  const body = { nombre: $("mc-nombre").value, descripcion: $("mc-desc").value, color_hex: $("mc-color").value,
+                 icono: editando ? editando.icono : null };
+  const r = editando ? await call("/api/canales/" + editando.id_canal, { method: "PUT", body: { ...body, estado: editando.estado } })
+                     : await call("/api/canales", { method: "POST", body });
+  toast(r, r.err ? r.text : r.datos.mensaje); if (r.err) return;
+  cerrar(); cargar();
+}
+async function eliminar() {
+  if (!confirm(`¿Eliminar el canal ${editando.nombre}?`)) return;
+  const r = await call("/api/canales/" + editando.id_canal, { method: "DELETE" });
+  toast(r, r.err ? r.text : r.datos.mensaje); if (r.err) return;
+  cerrar(); cargar();
+}
+
+$("canales-lista").addEventListener("click", async e => {
+  if (e.target.closest("#btn-nuevo-canal")) return abrir(null);
+  const conf = e.target.closest("[data-conf]"), est = e.target.closest("[data-estado]");
+  if (conf) abrir(CANALES.find(c => c.id_canal === Number(conf.dataset.conf)));
+  if (est) {
+    const c = CANALES.find(x => x.id_canal === Number(est.dataset.estado)), activar = c.estado !== "Activo";
+    if (!activar && c.conversaciones_abiertas > 0 && !confirm(`${c.nombre} tiene ${c.conversaciones_abiertas} conversación(es) sin resolver. ¿Desactivarlo de todos modos?`)) return;
+    const r = await call("/api/canales/" + c.id_canal, { method: "PUT", body: { nombre: c.nombre, descripcion: c.descripcion, icono: c.icono, color_hex: c.color_hex, estado: activar ? "Activo" : "Inactivo" } });
+    toast(r, r.err ? r.text : (activar ? c.nombre + " conectado." : c.nombre + " desactivado.")); cargar();
+  }
+});
+cargar();
+</script>
+</body></html>

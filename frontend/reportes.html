@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/omnidesk-tokens.js?v=4"></script>
+</head>
+<body class="bg-background font-sans text-on-surface antialiased selection:bg-primary/20 selection:text-primary">
+<!-- Top Navigation Header -->
+<div id="app-header"></div>
+<!-- Main Content Stage -->
+<main class="w-full pt-16 bg-background min-h-screen">
+<div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+<!-- Top Action Bar & Filter Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-[26px] font-bold text-on-surface tracking-tight">Reportes de Atención</h1>
+<p id="rep-rango" class="text-[13px] text-on-surface-variant mt-0.5">Cargando…</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Date Segmented Control -->
+<div class="inline-flex items-center p-1 bg-surface-container-low border border-outline-variant rounded-xl shadow-inner" id="range-toggle-group">
+<button class="range-btn px-3.5 py-1.5 rounded-lg text-[12px] font-semibold transition-all bg-primary text-surface-container-lowest shadow-md shadow-primary/25" data-days="7" type="button">
+              7 días
+            </button>
+<button class="range-btn px-3.5 py-1.5 rounded-lg text-[12px] font-medium text-on-surface-variant hover:text-on-surface transition-all" data-days="30" type="button">
+              30 días
+            </button>
+<button class="range-btn px-3.5 py-1.5 rounded-lg text-[12px] font-medium text-on-surface-variant hover:text-on-surface transition-all" data-days="90" type="button">
+              90 días
+            </button>
+</div>
+<!-- Export Button -->
+<button id="btn-exportar" class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface text-[13px] font-medium rounded-xl border border-outline-variant shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">download</span>
+<span>Exportar</span>
+</button>
+</div>
+</div>
+<div id="rep-cards" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
+<!-- Charts Row (Volume by Channel & Sentiment Donut) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- Channel Volume Bar Chart -->
+<div class="lg:col-span-8 p-6 bg-surface-container rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+<div>
+<h2 class="text-[17px] font-semibold text-on-surface tracking-tight">Mensajes por canal</h2>
+<p id="rep-etiqueta" class="text-[12px] text-on-surface-variant">Cargando…</p>
+</div>
+<span id="rep-total-msgs" class="text-[12px] text-on-surface-variant font-mono"></span>
+</div>
+<div id="rep-barras" class="w-full flex-1 flex flex-col justify-center gap-3"></div>
+</div>
+<!-- General Sentiment Donut Widget -->
+<div class="lg:col-span-4 p-6 bg-surface-container rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col justify-between">
+<div>
+<h2 class="text-[17px] font-semibold text-on-surface tracking-tight">Sentimiento general</h2>
+<p class="text-[12px] text-on-surface-variant">Distribución de emociones detectadas</p>
+</div>
+<div id="rep-dona"></div>
+</div>
+</div>
+<!-- Agent Performance Table Card -->
+<div class="p-6 bg-surface-container rounded-2xl border border-outline-variant/60 shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+<div>
+<h2 class="text-[17px] font-semibold text-on-surface tracking-tight">Rendimiento por agente</h2>
+<p class="text-[12px] text-on-surface-variant">Casos resueltos, tiempo promedio y satisfacción</p>
+</div>
+<div class="inline-flex items-center px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant/60 text-on-surface text-[12px] font-medium">
+<span id="rep-etiqueta2">Periodo seleccionado</span>
+</div>
+</div>
+<!-- Table Structure -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left min-w-[700px]">
+<thead>
+<tr class="text-on-surface-variant text-[11px] uppercase tracking-wider border-b border-outline-variant/50">
+<th class="py-3 px-4 font-semibold">Agente</th>
+<th class="py-3 px-4 font-semibold">Casos Resueltos</th>
+<th class="py-3 px-4 font-semibold">1.ª Respuesta (prom.)</th>
+<th class="py-3 px-4 font-semibold">Satisfacción</th>
+<th class="py-3 px-4 font-semibold text-right">Carga</th>
+</tr>
+</thead>
+<tbody id="rep-agentes" class="divide-y divide-outline-variant/30 text-on-surface text-[13px]"></tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+<script src="assets/omnidesk-layout.js?v=4"></script>
+<script>OmniDesk.mount({ permiso: "reportes.ver", seccion: "reportes" });</script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const num = v => v == null ? null : Number(v);
+const col = c => /^#[0-9a-fA-F]{6}$/.test(c || "") ? c : "#10b981";
+const ini = n => String(n || "?").split(" ").map(x => x[0]).slice(0, 2).join("").toUpperCase();
+const fecha = (s, op) => new Date(s + "T12:00:00").toLocaleDateString("es-MX", op);
+let DATOS = null, DIAS = 7;
+
+function tiempo(min) {                       // minutos (decimal) -> "2m 34s"
+  if (min == null) return "—";
+  const s = Math.round(min * 60);
+  return s < 60 ? s + "s" : s < 3600 ? Math.floor(s / 60) + "m " + String(s % 60).padStart(2, "0") + "s" : Math.floor(s / 3600) + "h " + String(Math.floor(s % 3600 / 60)).padStart(2, "0") + "m";
+}
+const pct = v => v == null ? "—" : (Number.isInteger(v) ? v : v.toFixed(1)) + "%";
+function toast(res, texto) {
+  let t = $("toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.textContent = texto || res.text;
+  t.className = "fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium " + (res.err ? "bg-error-container/80 border-error/40 text-error" : "bg-primary-container border-primary/40 text-primary-light");
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+/* Cambio frente al periodo anterior. mejor = "sube" (más es bueno) o "baja" (menos es bueno) */
+function cambio(actual, previo, unidad, mejor) {
+  if (actual == null || previo == null) return { txt: "Sin dato previo", bueno: null, icono: "remove" };
+  const dif = actual - previo;
+  if (previo === 0 && unidad === "%rel") return { txt: actual === 0 ? "Sin cambio" : "Nuevo", bueno: actual === 0 ? null : mejor === "sube", icono: actual === 0 ? "remove" : "trending_up" };
+  let txt, valor = dif;
+  if (unidad === "%rel") { valor = dif / previo * 100; txt = (valor > 0 ? "+" : "") + Math.round(valor) + "%"; }
+  else if (unidad === "seg") { valor = Math.round(dif * 60); txt = (valor > 0 ? "+" : valor < 0 ? "-" : "") + Math.abs(valor) + "s"; }
+  else { txt = (dif > 0 ? "+" : "") + dif.toFixed(1) + " pts"; }
+  if (valor === 0 || Math.abs(valor) < 0.05) return { txt: "Sin cambio", bueno: null, icono: "remove" };
+  return { txt, bueno: (valor > 0) === (mejor === "sube"), icono: valor > 0 ? "trending_up" : "trending_down" };
+}
+function tarjeta(titulo, valor, c, sufijo) {
+  const k = c.bueno === null ? "text-on-surface-variant bg-surface-container-high border-outline-variant/60" : c.bueno ? "text-primary bg-primary/10 border-primary/20" : "text-error bg-error/10 border-error/20";
+  return `<div class="p-6 bg-surface-container rounded-2xl border border-outline-variant/60 shadow-sm hover:border-outline transition-all">
+    <span class="block text-[11px] uppercase font-semibold text-on-surface-variant tracking-wider mb-2">${titulo}</span>
+    <div class="flex items-baseline justify-between gap-2"><span class="text-[30px] font-bold text-on-surface tracking-tight font-mono">${valor}</span>
+      <div class="inline-flex items-center gap-1 text-[12px] font-semibold px-2 py-0.5 rounded-md border ${k}"><span class="material-symbols-outlined text-[16px]">${c.icono}</span><span>${c.txt}</span></div></div>
+    <span class="block text-[12px] text-on-surface-variant mt-2 font-normal">${sufijo}</span></div>`;
+}
+
+function pintar() {
+  const D = DATOS, R = D.resumen, A = D.anterior, vs = `vs ${D.dias} días anteriores`;
+  const d1 = fecha(D.desde, { day: "numeric", month: "long" }), d2 = fecha(D.hasta, { day: "numeric", month: "long", year: "numeric" });
+  $("rep-rango").textContent = `Del ${d1} al ${d2}`;
+  $("rep-etiqueta2") && ($("rep-etiqueta2").textContent = `Últimos ${DATOS.dias} días`);
+  $("rep-etiqueta").textContent = `Últimos ${D.dias} días`;
+
+  $("rep-cards").innerHTML =
+    tarjeta("Total de Chats", R.total_conversaciones ?? 0, cambio(R.total_conversaciones, A.total_conversaciones, "%rel", "sube"), vs) +
+    tarjeta("Tiempo de 1.ª respuesta", tiempo(R.minutos_primera_respuesta), cambio(R.minutos_primera_respuesta, A.minutos_primera_respuesta, "seg", "baja"), vs) +
+    tarjeta("Casos Resueltos", pct(R.tasa_resolucion_pct), cambio(R.tasa_resolucion_pct, A.tasa_resolucion_pct, "pts", "sube"), vs);
+
+  // Mensajes por canal
+  const C = D.canales, max = Math.max(1, ...C.map(c => c.total_mensajes));
+  $("rep-total-msgs").textContent = `Total: ${C.reduce((a, c) => a + c.total_mensajes, 0)} mensajes`;
+  $("rep-barras").innerHTML = C.map(c => `<div class="flex items-center gap-3 ${c.estado === "Activo" ? "" : "opacity-60"}">
+      <span class="w-24 shrink-0 text-[12px] text-on-surface-variant truncate" title="${esc(c.canal)}">${esc(c.canal)}</span>
+      <div class="flex-1 h-7 rounded-md bg-surface-container-high overflow-hidden"><div class="h-full rounded-md transition-all duration-500" style="width:${(c.total_mensajes / max * 100).toFixed(1)}%;background:${col(c.color_hex)}"></div></div>
+      <span class="w-10 shrink-0 text-right font-mono text-[13px] text-on-surface">${c.total_mensajes}</span></div>`).join("")
+    || `<p class="text-sm text-on-surface-variant">No hay canales.</p>`;
+
+  // Sentimiento (dona)
+  const S = { Satisfecho: 0, Neutral: 0, Molesto: 0 }, T = { Satisfecho: 0, Neutral: 0, Molesto: 0 };
+  D.sentimiento.forEach(s => { S[s.sentimiento] = s.porcentaje || 0; T[s.sentimiento] = s.total; });
+  const hay = T.Satisfecho + T.Neutral + T.Molesto > 0, base = "M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831";
+  let acum = 0;
+  const seg = [["Satisfecho", "text-primary"], ["Neutral", "text-slate-500"], ["Molesto", "text-rose-400"]].map(([k, c]) => {
+    const p = hay ? T[k] / (T.Satisfecho + T.Neutral + T.Molesto) * 100 : 0, off = acum; acum += p;
+    return p > 0 ? `<path class="${c}" d="${base}" fill="none" stroke="currentColor" stroke-dasharray="${p.toFixed(2)}, 100" stroke-dashoffset="${(-off).toFixed(2)}" stroke-width="4.2"></path>` : "";
+  }).join("");
+  const fila = (k, dot, txt) => `<div class="flex items-center justify-between gap-3"><div class="flex items-center gap-2 min-w-0"><span class="w-2.5 h-2.5 rounded-full ${dot} shrink-0"></span><span class="text-[13px] ${txt} truncate">${k}</span></div>
+    <div class="flex items-center gap-3 shrink-0"><span class="text-[12px] font-semibold ${txt} font-mono" title="${T[k]} conversaciones">${hay ? pct(S[k]) : "—"}</span>
+    <div class="w-20 h-1.5 rounded-full bg-surface-container-high overflow-hidden"><div class="h-full ${dot} rounded-full" style="width:${S[k]}%"></div></div></div></div>`;
+  $("rep-dona").innerHTML = `
+    <div class="relative w-44 h-44 mx-auto my-4 flex items-center justify-center">
+      <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36"><path class="text-surface-container-high" d="${base}" fill="none" stroke="currentColor" stroke-width="4"></path>${seg}</svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center text-center"><span class="text-[26px] font-bold text-on-surface tracking-tight font-mono">${hay ? pct(S.Satisfecho) : "—"}</span><span class="text-[11px] text-primary font-semibold uppercase tracking-wider">Positivo</span></div></div>
+    <div class="space-y-3 pt-2">${fila("Satisfecho", "bg-primary", "text-on-surface")}${fila("Neutral", "bg-slate-500", "text-on-surface-variant")}${fila("Molesto", "bg-rose-400", "text-on-surface-variant")}</div>`;
+
+  // Agentes
+  const G = D.agentes, mx = Math.max(1, ...G.map(a => a.asignadas));
+  $("rep-agentes").innerHTML = G.map(a => {
+    const llenas = a.asignadas > 0 ? Math.max(1, Math.ceil(a.asignadas / mx * 4)) : 0, sat = a.satisfaccion_pct;
+    return `<tr class="hover:bg-surface-container-high/40 transition-colors">
+      <td class="py-3.5 px-4"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant text-primary flex items-center justify-center text-[12px] font-bold">${esc(ini(a.agente))}</div>
+        <div><span class="font-medium text-on-surface block">${esc(a.agente)}</span><span class="block text-on-surface-variant text-[11px]">${esc(a.rol)}</span></div></div></td>
+      <td class="py-3.5 px-4"><span class="font-bold font-mono">${a.resueltas}</span> <span class="text-on-surface-variant text-[12px]">de ${a.asignadas}</span></td>
+      <td class="py-3.5 px-4 text-on-surface font-mono">${tiempo(a.minutos_primera_respuesta)}</td>
+      <td class="py-3.5 px-4"><div class="flex items-center gap-3"><span class="font-semibold text-on-surface text-[13px] font-mono">${pct(sat)}</span><div class="w-24 h-1.5 rounded-full bg-surface-container-high overflow-hidden"><div class="h-full bg-primary rounded-full" style="width:${sat || 0}%"></div></div></div></td>
+      <td class="py-3.5 px-4 text-right" title="${a.asignadas} asignadas"><div class="inline-flex items-center gap-1 justify-end">${[0, 1, 2, 3].map(i => `<span class="w-1.5 h-3.5 rounded-sm ${i < llenas ? "bg-primary" : "bg-surface-container-highest"}"></span>`).join("")}</div></td></tr>`;
+  }).join("") || `<tr><td colspan="5" class="py-6 px-4 text-sm text-on-surface-variant">No hay agentes activos.</td></tr>`;
+}
+
+async function cargar() {
+  let r;
+  try { r = await OmniDesk.api("/api/reportes?dias=" + DIAS); } catch { toast({ err: 1 }, "No se pudo conectar con el servidor. ¿Está encendido (npm start)?"); return; }
+  if (!r) return;
+  if (!r.ok) { toast({ err: 1 }, (r.datos.error || {}).mensaje || "No se pudo cargar el reporte."); return; }
+  DATOS = r.datos; pintar();
+}
+
+/* Exportar: CSV con BOM para que Excel respete los acentos */
+function exportar() {
+  if (!DATOS) return;
+  const q = v => { const s = v == null ? "" : String(v); return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const f = (...c) => c.map(q).join(",");
+  const R = DATOS.resumen, L = [f("OmniDesk · Reporte de atención"), f("Desde", DATOS.desde, "Hasta", DATOS.hasta), "",
+    f("Resumen"), f("Total de chats", R.total_conversaciones), f("Resueltos", R.resueltas), f("Tasa de resolución (%)", R.tasa_resolucion_pct),
+    f("Tiempo 1.ª respuesta", tiempo(R.minutos_primera_respuesta)), f("Satisfacción (%)", R.satisfaccion_pct), f("Total de mensajes", R.total_mensajes), "",
+    f("Mensajes por canal"), f("Canal", "Mensajes", "Conversaciones con actividad"), ...DATOS.canales.map(c => f(c.canal, c.total_mensajes, c.conversaciones_con_actividad)), "",
+    f("Sentimiento"), f("Sentimiento", "Conversaciones", "Porcentaje"), ...DATOS.sentimiento.map(s => f(s.sentimiento, s.total, s.porcentaje)), "",
+    f("Rendimiento por agente"), f("Agente", "Rol", "Asignadas", "Resueltas", "Tasa resolución (%)", "1.ª respuesta (prom.)", "Resolución (prom.)", "Satisfacción (%)"),
+    ...DATOS.agentes.map(a => f(a.agente, a.rol, a.asignadas, a.resueltas, a.tasa_resolucion_pct, tiempo(a.minutos_primera_respuesta), tiempo(a.minutos_resolucion), a.satisfaccion_pct))];
+  const url = URL.createObjectURL(new Blob(["﻿" + L.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a"); a.href = url; a.download = `omnidesk-reporte-${DATOS.desde}_a_${DATOS.hasta}.csv`; a.click(); URL.revokeObjectURL(url);
+}
+
+const botones = document.querySelectorAll("#range-toggle-group .range-btn");
+botones.forEach(btn => btn.addEventListener("click", () => {
+  botones.forEach(b => { b.classList.remove("bg-primary", "text-surface-container-lowest", "shadow-md", "shadow-primary/25", "font-semibold"); b.classList.add("text-on-surface-variant", "font-medium"); });
+  btn.classList.add("bg-primary", "text-surface-container-lowest", "shadow-md", "shadow-primary/25", "font-semibold"); btn.classList.remove("text-on-surface-variant", "font-medium");
+  DIAS = Number(btn.dataset.days); cargar();
+}));
+if (OmniDesk.can("reportes.exportar")) $("btn-exportar").addEventListener("click", exportar); else $("btn-exportar").classList.add("hidden");
+cargar();
+</script>
+
+</body></html>

@@ -1,252 +1,99 @@
-```markdown
+# OmniDesk
 
-\\# Omnidesk - Plataforma de Gestión (Proyecto Integrador)
+Plataforma de atención al cliente con IA: bandeja de conversaciones en tiempo real, asignación a agentes, roles y permisos, reportes, auditoría y análisis de sentimiento con IA (Gemini o Claude).
 
+Proyecto académico — TODO Academy.
 
+## Tecnologías
 
-Plataforma web integral \\\*\\\*Omnidesk\\\*\\\*, desarrollada como proyecto integrador. El sistema incluye un \\\*\\\*Frontend\\\*\\\* dinámico estructurado con un diseño unificado y un \\\*\\\*Backend\\\*\\\* en Node.js/Express con conexión a base de datos MySQL.
+- **Frontend:** HTML + JavaScript + Tailwind (CDN). Sin compilación.
+- **Backend:** Node.js 18+ · Express 4 · mysql2 · JWT · bcryptjs · Socket.IO
+- **Base de datos:** MySQL/MariaDB (XAMPP) con procedimientos almacenados
+- **IA:** Gemini o Claude (por `fetch`, la clave vive solo en el servidor)
 
-
-
-\\---
-
-
-
-\\## 🛠️ Tecnologías Utilizadas
-
-
-
-\\\* \\\*\\\*Frontend:\\\*\\\* HTML5, CSS3, JavaScript (ES6+), Tokens de diseño (`omnidesk-tokens.js`), Layout dinámico (`omnidesk-layout.js`).
-
-\\\* \\\*\\\*Backend:\\\*\\\* Node.js, Express.js.
-
-\\\* \\\*\\\*Base de Datos:\\\*\\\* MySQL / MariaDB (vía XAMPP).
-
-\\\* \\\*\\\*Seguridad \\\& Autenticación:\\\*\\\* JWT (JSON Web Tokens), Bcryptjs.
-
-
-
-\\---
-
-
-
-\\## 📂 Estructura General del Proyecto
-
-
-
-```text
-
-.
-
-├── omnidesk\\\_frontend/                  # Módulo de Frontend / Interfaz de Usuario
-
-│   ├── assets/
-
-│   │   ├── omnidesk-layout.js          # Componente y maquetación general
-
-│   │   └── omnidesk-tokens.js          # Tokens de diseño y estilos
-
-│   ├── agentes.html                    # Vista de gestión de agentes
-
-│   ├── canales.html                    # Vista de administración de canales
-
-│   ├── conversaciones.html             # Vista de chats y conversaciones
-
-│   ├── index.html                      # Panel principal / Dashboard
-
-│   ├── login.html                      # Pantilla de inicio de sesión
-
-│   ├── mi-perfil.html                  # Vista de edición de perfil
-
-│   ├── reportes.html                   # Vista de reportes y métricas
-
-│   ├── roles.html                      # Vista de gestión de roles y permisos
-
-│   └── DESIGN.md                       # Especificaciones de diseño
-
-│
-
-└── omnidesk\\\_backend/                   # Módulo de Backend / API REST
-
-\&#x20;   ├── scripts/
-
-\&#x20;   │   └── set-password.js             # Script de utilidad para contraseñas
-
-\&#x20;   ├── src/
-
-\&#x20;   │   ├── auth.js                     # Middleware y lógica de autenticación
-
-\&#x20;   │   ├── db.js                       # Conexión a la base de datos MySQL
-
-\&#x20;   │   ├── http.js                     # Configuración y utilidades HTTP
-
-\&#x20;   │   ├── server.js                   # Punto de entrada principal de la API
-
-\&#x20;   │   ├── rutas-auth.js               # Endpoints de login y sesión
-
-\&#x20;   │   ├── rutas-canales.js            # Endpoints de canales
-
-\&#x20;   │   ├── rutas-conversaciones.js     # Endpoints de mensajes y chats
-
-\&#x20;   │   ├── rutas-perfil.js             # Endpoints de perfil de usuario
-
-\&#x20;   │   ├── rutas-roles.js              # Endpoints de roles y permisos
-
-\&#x20;   │   └── rutas-usuarios.js           # Endpoints de administración de usuarios
-
-\&#x20;   └── package.json                    # Dependencias y scripts de Node.js
-
-
+## Estructura
 
 ```
-
-
-
-\---
-
-
-
-\## 📋 Requisitos Previos
-
-
-
-\* \*\*Node.js\*\* (Versión 16.x o superior)
-
-\* \*\*XAMPP Control Panel\*\* (Con servicio \*\*Apache\*\* y \*\*MySQL\*\* activos)
-
-
-
-\---
-
-
-
-\## 🚀 Instalación y Ejecución
-
-
-
-\### 1. Clonar el repositorio
-
-
-
-```bash
-
-git clone \\\[https://github.com/gaerudcmdelacruz-ops/G19X-UTSLRC-AGDL-639-ACADEMIC.git](https://github.com/gaerudcmdelacruz-ops/G19X-UTSLRC-AGDL-639-ACADEMIC.git)
-
-
-
+omnidesk/
+├── backend/    API (src/, scripts/, package.json, .env.example)
+├── frontend/   Páginas HTML y assets/
+├── db/         base-de-datos.sql (esquema + procedimientos + datos demo)
+├── docs/       mvp.md y prd.md
+└── README.md
 ```
 
+## Requisitos
 
+- XAMPP con **Apache** y **MySQL** encendidos (usuario `root`, sin contraseña)
+- Node.js 18 o superior (`node -v`)
 
-\### 2. Configurar y Ejecutar el Backend
+## Instalación paso a paso
 
+### 1. Base de datos
 
+1. Abre `http://localhost/phpmyadmin`.
+2. Pestaña **Importar** → elige `db/base-de-datos.sql` → **Importar**.
+3. Debe aparecer la base `omnidesk_db`.
 
-```bash
+> ⚠ El script **borra y recrea** las tablas de `omnidesk_db`. No lo uses sobre datos que quieras conservar.
 
-cd omnidesk\\\_backend
+### 2. Backend
 
+En PowerShell, dentro de la carpeta `backend`:
+
+```powershell
 npm install
-
-
-
+copy .env.example .env
 ```
 
+Abre `.env` y cambia `JWT_SECRET` por una frase larga y propia. Para generarla:
 
-
-Crea un archivo `.env` dentro de `omnidesk\\\_backend/` con las siguientes variables:
-
-
-
-```env
-
-PORT=3000
-
-DB\\\_HOST=localhost
-
-DB\\\_USER=root
-
-DB\\\_PASS=
-
-DB\\\_NAME=omnidesk\\\_db
-
-JWT\\\_SECRET=tu\\\_clave\\\_secreta\\\_jwt
-
-
-
+```powershell
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
+(Opcional) Para la IA, pon `GEMINI_API_KEY` **o** `ANTHROPIC_API_KEY` en el `.env`. Sin clave, todo funciona menos el panel de IA.
 
+Arranca:
 
-Iniciar el servidor:
-
-
-
-```bash
-
+```powershell
 npm start
-
-
-
 ```
 
+Debe decir que escucha en `http://localhost:3000`.
 
+### 3. Usuario de prueba
 
-\*El servidor estará ejecutándose en `http://localhost:3000`.\*
+Los usuarios demo se crean **sin contraseña**. Fíjala con:
 
-
-
-\### 3. Ejecutar el Frontend
-
-
-
-\* Si utilizas \*\*XAMPP\*\*, coloca la carpeta `omnidesk\\\_frontend` dentro del directorio `htdocs` y accede vía navegador en: `http://localhost/omnidesk\\\_frontend/login.html`
-
-\* O puedes abrir los archivos `.html` directamente desde un servidor local (como \*Live Server\* en VS Code).
-
-
-
-\---
-
-
-
-\## 📡 Endpoints Principales de la API
-
-
-
-| Módulo | Ruta | Descripción |
-
-| --- | --- | --- |
-
-| \*\*Autenticación\*\* | `/auth` | Inicio de sesión y verificación |
-
-| \*\*Usuarios\*\* | `/usuarios` | CRUD de usuarios del sistema |
-
-| \*\*Roles\*\* | `/roles` | Administración de roles y permisos |
-
-| \*\*Perfil\*\* | `/perfil` | Consulta y actualización de datos personales |
-
-| \*\*Canales\*\* | `/canales` | Gestión de canales de comunicación |
-
-| \*\*Conversaciones\*\* | `/conversaciones` | Envío, recepción y gestión de chats |
-
-
-
-\---
-
-
-
-\## 👨‍💻 Autor
-
-
-
-\* \*\*Gael de la Cruz\*\* - \*\[@gaerudcmdelacruz-ops](https://www.google.com/search?q=https://github.com/gaerudcmdelacruz-ops)\*
-
-
-
+```powershell
+npm run admin
 ```
 
+Correo: `admin@omnidesk.local` (Enter) · escribe una contraseña de 8+ caracteres.
 
+Otros usuarios demo: `laura.mendez@omnidesk.local` (Supervisor), `marcos.pena@omnidesk.local` y `julia.rivas@omnidesk.local` (Agentes). Repite `npm run admin` para ponerles contraseña.
 
-```
+### 4. Frontend
 
+Copia la carpeta `frontend` dentro de `C:\xampp\htdocs\` (por ejemplo `C:\xampp\htdocs\omnidesk`) y abre:
+
+`http://localhost/omnidesk/login.html`
+
+Inicia sesión con el usuario de prueba.
+
+## Variables de entorno (`backend/.env`)
+
+| Variable | Para qué |
+|---|---|
+| `JWT_SECRET` | Firma de sesiones (obligatoria) |
+| `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` | IA (una de las dos) |
+| `IA_PROVEEDOR` | `gemini` o `claude` si tienes ambas |
+| `MODO_DEMO` | `1` permite simular mensajes del cliente |
+
+El archivo `.env` **no se sube** a GitHub (está en `.gitignore`).
+
+## Documentación
+
+- [MVP](docs/mvp.md)
+- [PRD](docs/prd.md)

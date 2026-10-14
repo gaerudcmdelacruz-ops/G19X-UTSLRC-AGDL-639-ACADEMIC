@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/omnidesk-tokens.js?v=4"></script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #031427;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-white">
+<div id="app-header"></div>
+<div id="app-sidebar"></div>
+<div class="pl-64">
+<main class="w-full pt-16 bg-surface min-h-screen">
+<div class="flex flex-col w-full">
+<div class="w-full bg-[#000f21]/60 border-b border-[#1e293b] px-space-2xl py-space-xl flex items-center justify-between">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-white font-bold tracking-tight">Auditoría</h1>
+<p class="font-body-sm text-tertiary mt-1">Quién hizo qué y cuándo. Solo lectura.</p>
+</div>
+<div class="flex items-center gap-2">
+<select id="filtro-entidad" class="px-3 py-2 rounded-lg bg-[#0b1c30] border border-[#1e293b] text-xs text-white focus:outline-none focus:border-emerald-500/50">
+<option value="">Todo</option>
+<option value="conversacion">Conversaciones</option>
+<option value="usuario">Usuarios</option>
+<option value="rol">Roles</option>
+<option value="canal">Canales</option>
+<option value="cliente">Clientes</option>
+</select>
+<button id="btn-refrescar" class="px-3 py-2 rounded-lg bg-[#0b1c30] hover:bg-[#102034] border border-[#1e293b] text-xs text-slate-200 flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">refresh</span><span>Actualizar</span>
+</button>
+</div>
+</div>
+<div class="w-full max-w-6xl mx-auto px-space-2xl py-space-2xl">
+<div class="bg-[#0b1c30] border border-[#1e293b] rounded-xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-[#000f21] text-[11px] uppercase tracking-wider text-[#94a3b8]">
+<tr><th class="px-4 py-3 font-semibold whitespace-nowrap">Fecha</th><th class="px-4 py-3 font-semibold">Quién</th><th class="px-4 py-3 font-semibold">Acción</th><th class="px-4 py-3 font-semibold">Sobre</th><th class="px-4 py-3 font-semibold">Detalle</th></tr>
+</thead>
+<tbody id="aud-filas" class="divide-y divide-[#1e293b]"><tr><td colspan="5" class="px-4 py-6 text-center text-[#94a3b8] text-xs">Cargando…</td></tr></tbody>
+</table>
+</div>
+</div>
+<p id="aud-pie" class="text-[11px] text-[#94a3b8] mt-3"></p>
+</div>
+</div>
+</main>
+</div>
+<script src="assets/omnidesk-layout.js?v=4"></script>
+<script>OmniDesk.mount({ permiso: "auditoria.ver", seccion: "configuracion", sub: "auditoria" });</script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+async function call(ruta, op) {
+  let r; try { r = await OmniDesk.api(ruta, op); } catch { return { err: 503, text: "No se pudo conectar con el servidor. ¿Está encendido (npm start)?" }; }
+  if (!r) return { err: 401, text: "Tu sesión expiró." };
+  if (r.ok) return { err: 0, datos: r.datos };
+  const e = r.datos.error || {}; return { err: e.codigo || r.status, text: e.mensaje || "Error inesperado." };
+}
+const ACCION = { CREAR: ["Creó", "emerald"], ACTUALIZAR: ["Actualizó", "sky"], ELIMINAR: ["Eliminó", "rose"], ASIGNAR_PERMISOS: ["Cambió permisos", "sky"],
+  CAMBIAR_ROL: ["Cambió rol", "sky"], DESACTIVAR: ["Desactivó", "rose"], CAMBIAR_PASSWORD: ["Cambió contraseña", "amber"], ACTUALIZAR_PERFIL: ["Editó su perfil", "sky"],
+  ASIGNAR: ["Asignó", "sky"], RESOLVER: ["Resolvió", "emerald"], REABRIR: ["Reabrió", "amber"], ESCALAR: ["Escaló", "amber"], CAMBIAR_ESTADO: ["Cambió estado", "sky"] };
+const ENTIDAD = { rol: "Rol", usuario: "Usuario", canal: "Canal", cliente: "Cliente", conversacion: "Conversación" };
+const COLOR = { emerald: "bg-emerald-500/15 border-emerald-500/30 text-emerald-300", sky: "bg-sky-500/15 border-sky-500/30 text-sky-300",
+  rose: "bg-rose-500/15 border-rose-500/30 text-rose-300", amber: "bg-amber-400/15 border-amber-400/30 text-amber-300" };
+async function cargar() {
+  const e = $("filtro-entidad").value, r = await call("/api/auditoria?limite=200" + (e ? "&entidad=" + e : ""));
+  if (r.err) { $("aud-filas").innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-rose-300 text-xs">${esc(r.text)}</td></tr>`; $("aud-pie").textContent = ""; return; }
+  const filas = r.datos.registros;
+  $("aud-filas").innerHTML = filas.map(a => {
+    const [txt, c] = ACCION[a.accion] || [a.accion, "sky"];
+    const f = new Date(a.fecha).toLocaleString("es-MX", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    return `<tr class="hover:bg-[#0f233a] transition-colors"><td class="px-4 py-3 whitespace-nowrap font-mono text-xs text-[#94a3b8]">${esc(f)}</td>
+      <td class="px-4 py-3 text-white">${esc(a.actor || "Sistema")}</td>
+      <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full border text-[11px] font-semibold whitespace-nowrap ${COLOR[c]}">${esc(txt)}</span></td>
+      <td class="px-4 py-3 text-slate-300 whitespace-nowrap">${esc(ENTIDAD[a.entidad] || a.entidad)}${a.id_entidad ? ` <span class="font-mono text-xs text-[#94a3b8]">#${a.id_entidad}</span>` : ""}</td>
+      <td class="px-4 py-3 text-xs text-slate-300 break-words">${esc(a.detalle || "—")}</td></tr>`;
+  }).join("") || `<tr><td colspan="5" class="px-4 py-6 text-center text-[#94a3b8] text-xs">No hay registros.</td></tr>`;
+  $("aud-pie").textContent = `Mostrando los ${filas.length} registros más recientes.`;
+}
+$("filtro-entidad").addEventListener("change", cargar);
+$("btn-refrescar").addEventListener("click", cargar);
+cargar();
+</script>
+</body></html>

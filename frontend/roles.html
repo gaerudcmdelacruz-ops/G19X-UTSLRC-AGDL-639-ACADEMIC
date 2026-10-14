@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roles y permisos · OmniDesk</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="assets/omnidesk-tokens.js?v=4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<style>body{font-family:'Plus Jakarta Sans',sans-serif}input[type=checkbox]{accent-color:#10b981}</style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pt-16">
+<div id="app-header"></div>
+<div id="app-sidebar"></div>
+<div class="pl-64"><main class="max-w-6xl mx-auto px-6 py-6">
+  <div class="flex items-end justify-between mb-5">
+    <div><h1 class="text-2xl font-bold text-white">Roles y permisos</h1>
+      <p class="text-sm text-on-surface-variant">Define qué puede hacer cada rol dentro de OmniDesk.</p></div>
+    <button id="btn-nuevo" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-surface font-semibold text-sm hover:opacity-90">
+      <span class="material-symbols-outlined text-[18px]">add</span>Nuevo rol</button>
+  </div>
+  <div class="grid md:grid-cols-[300px_1fr] gap-5">
+    <aside id="lista" class="space-y-2"></aside>
+    <section id="panel" class="rounded-2xl border border-outline-variant bg-surface-container-low p-5"></section>
+  </div>
+</main></div>
+
+<!-- Modal crear / editar -->
+<div id="modal" class="hidden fixed inset-0 z-[60] bg-black/60 items-center justify-center p-4">
+  <form id="form" class="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container p-6 space-y-4">
+    <h2 id="m-titulo" class="text-lg font-bold text-white"></h2>
+    <label class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Nombre
+      <input id="m-nombre" maxlength="50" class="mt-1 w-full rounded-lg bg-input-bg border border-outline-variant px-3 py-2 text-sm normal-case font-normal text-on-surface focus:outline-none focus:border-primary"></label>
+    <label class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Descripción
+      <textarea id="m-desc" rows="3" maxlength="255" class="mt-1 w-full rounded-lg bg-input-bg border border-outline-variant px-3 py-2 text-sm normal-case font-normal text-on-surface focus:outline-none focus:border-primary"></textarea></label>
+    <div class="flex justify-between pt-2">
+      <button type="button" id="m-eliminar" class="px-3 py-2 rounded-lg text-sm text-error hover:bg-error-container/30">Eliminar rol</button>
+      <div class="flex gap-2">
+        <button type="button" id="m-cancelar" class="px-4 py-2 rounded-lg text-sm text-tertiary hover:bg-surface-container-high">Cancelar</button>
+        <button class="px-4 py-2 rounded-lg bg-primary text-surface text-sm font-semibold">Guardar</button></div>
+    </div>
+  </form>
+</div>
+<div id="toast" class="hidden fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium"></div>
+
+<script src="assets/omnidesk-layout.js?v=4"></script>
+<script>
+OmniDesk.mount({ permiso: "roles.ver", seccion: "configuracion", sub: "roles" });
+
+/* ---------- Capa de datos: API real (src/rutas-roles.js) ---------- */
+const S = { sel: null, roles: [], m: {} };   // m[idRol] = Set de ids de permisos (se carga al seleccionar)
+let PERMISOS = [];
+const rol = id => S.roles.find(r => r.id === id);
+async function call(ruta, op) {
+  let r; try { r = await OmniDesk.api(ruta, op); } catch { return { err: 503, text: "No se pudo conectar con el servidor. ¿Está encendido (npm start)?" }; }
+  if (!r) return { err: 401, text: "Tu sesión expiró." };
+  if (r.ok) return { err: 0, datos: r.datos };
+  const e = r.datos.error || {}; return { err: e.codigo || r.status, text: e.mensaje || "Error inesperado." };
+}
+async function cargarRoles() {
+  const r = await call("/api/roles"); if (r.err) return r;
+  S.roles = r.datos.roles.map(x => ({ id: x.id_rol, nombre: x.nombre, descripcion: x.descripcion || "", sistema: x.es_sistema, usuarios: x.total_usuarios, permisos: x.total_permisos }));
+  return r;
+}
+const api = {
+  async crear(n, d) { const r = await call("/api/roles", { method: "POST", body: { nombre: n, descripcion: d } }); if (r.err) return r; await cargarRoles(); return { err: 0, text: r.datos.mensaje, id: r.datos.id }; },
+  async actualizar(id, n, d) { const r = await call("/api/roles/" + id, { method: "PUT", body: { nombre: n, descripcion: d } }); if (r.err) return r; await cargarRoles(); return { err: 0, text: r.datos.mensaje }; },
+  async eliminar(id) { const r = await call("/api/roles/" + id, { method: "DELETE" }); if (r.err) return r; delete S.m[id]; await cargarRoles(); return { err: 0, text: r.datos.mensaje }; },
+  async permisos(id, ids) { const r = await call("/api/roles/" + id + "/permisos", { method: "PUT", body: { permisos: ids } }); if (r.err) return r; S.m[id] = new Set(ids); await cargarRoles(); return { err: 0, text: r.datos.mensaje }; }
+};
+
+/* ---------- UI ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const MOD = { conversaciones: "Conversaciones", clientes: "Clientes", canales: "Canales", agentes: "Agentes", roles: "Roles", reportes: "Reportes", auditoria: "Auditoría", perfil: "Perfil" };
+let draft = new Set();
+
+function toast(res) {
+  const t = $("toast"); t.textContent = res.text;
+  t.className = "fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium " +
+    (res.err ? "bg-error-container/80 border-error/40 text-error" : "bg-primary-container border-primary/40 text-primary-light");
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+function render() { render0(); permisosUI(); }
+function permisosUI() {
+  [["btn-nuevo","roles.crear"],["btn-editar","roles.editar"],["btn-guardar","roles.asignar_permisos"],["m-eliminar","roles.eliminar"]]
+    .forEach(([i, p]) => { const e = $(i); if (e && !OmniDesk.can(p)) e.classList.add("hidden"); });
+}
+function render0() {
+  $("lista").innerHTML = S.roles.map(r => `
+    <button data-id="${r.id}" class="w-full text-left rounded-xl border p-4 transition-colors ${r.id === S.sel ? "border-primary/40 bg-surface-container" : "border-outline-variant bg-surface-container-low hover:bg-surface-container"}">
+      <div class="flex items-center justify-between"><span class="font-semibold text-white">${esc(r.nombre)}</span>
+        ${r.sistema ? '<span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">Sistema</span>' : ""}</div>
+      <p class="text-xs text-on-surface-variant mt-1 line-clamp-2">${esc(r.descripcion || "Sin descripción")}</p>
+      <p class="font-mono text-[11px] text-outline mt-2">${r.usuarios} usuarios · ${r.permisos} permisos</p>
+    </button>`).join("");
+
+  const r = rol(S.sel), bloqueado = r.sistema && r.nombre === "Administrador";
+  const grupos = Object.keys(MOD).map(m => ({ m, items: PERMISOS.filter(p => p.modulo === m) }));
+  $("panel").innerHTML = `
+    <div class="flex items-center justify-between mb-4">
+      <div><h2 class="text-lg font-bold text-white">${esc(r.nombre)}</h2>
+        <p class="text-xs text-on-surface-variant">${bloqueado ? "El Administrador siempre tiene todos los permisos." : "Marca los permisos y guarda los cambios."}</p></div>
+      <div class="flex gap-2">
+        <button id="btn-editar" class="px-3 py-2 rounded-lg border border-outline-variant text-sm text-tertiary hover:bg-surface-container-high">Editar rol</button>
+        <button id="btn-guardar" ${bloqueado ? "disabled" : ""} class="px-4 py-2 rounded-lg bg-primary text-surface text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed">Guardar permisos</button>
+      </div></div>
+    <div class="space-y-5">${grupos.map(g => `
+      <fieldset><legend class="text-xs font-semibold uppercase tracking-wider text-primary-light mb-2">${MOD[g.m]}</legend>
+        <div class="grid sm:grid-cols-2 gap-2">${g.items.map(p => `
+          <label class="flex items-start gap-3 rounded-lg border border-outline-variant bg-input-bg px-3 py-2 ${bloqueado ? "opacity-70" : "cursor-pointer hover:border-primary/40"}">
+            <input type="checkbox" value="${p.id}" ${draft.has(p.id) ? "checked" : ""} ${bloqueado ? "disabled" : ""} class="mt-1">
+            <span><span class="block text-sm text-on-surface">${esc(p.desc)}</span><span class="font-mono text-[11px] text-outline">${p.codigo}</span></span>
+          </label>`).join("")}</div></fieldset>`).join("")}</div>`;
+}
+
+async function seleccionar(id) {
+  S.sel = id;
+  if (!S.m[id]) {
+    const r = await call("/api/roles/" + id + "/permisos"); if (r.err) { toast(r); return; }
+    S.m[id] = new Set(r.datos.permisos.filter(p => p.asignado).map(p => p.id_permiso));
+  }
+  draft = new Set(S.m[id]); render();
+}
+async function iniciar() {
+  const [rr, pp] = await Promise.all([cargarRoles(), call("/api/permisos")]);
+  const fallo = rr.err ? rr : pp.err ? pp : null;
+  if (fallo) { $("panel").innerHTML = `<p class="text-sm font-medium text-error">${esc(fallo.text)}</p>`; return; }
+  PERMISOS = pp.datos.permisos.map(p => ({ id: p.id_permiso, codigo: p.codigo, modulo: p.modulo, desc: p.descripcion }));
+  seleccionar(S.roles[0].id);
+}
+
+$("lista").addEventListener("click", e => { const b = e.target.closest("button[data-id]"); if (b) seleccionar(+b.dataset.id); });
+$("panel").addEventListener("change", e => { if (e.target.type === "checkbox") e.target.checked ? draft.add(+e.target.value) : draft.delete(+e.target.value); });
+$("panel").addEventListener("click", async e => {
+  if (e.target.closest("#btn-guardar")) { const res = await api.permisos(S.sel, [...draft]); toast(res); render(); }
+  if (e.target.closest("#btn-editar")) abrir(rol(S.sel));
+});
+
+/* Modal */
+let editando = null;
+function abrir(r) {
+  editando = r || null;
+  $("m-titulo").textContent = r ? "Editar rol" : "Nuevo rol";
+  $("m-nombre").value = r ? r.nombre : ""; $("m-desc").value = r ? r.descripcion : "";
+  $("m-nombre").disabled = !!(r && r.sistema);
+  $("m-eliminar").classList.toggle("hidden", !r || !OmniDesk.can("roles.eliminar"));
+  $("modal").classList.replace("hidden", "flex"); $("m-nombre").focus();
+}
+const cerrar = () => $("modal").classList.replace("flex", "hidden");
+$("btn-nuevo").onclick = () => abrir(null);
+$("m-cancelar").onclick = cerrar;
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") cerrar(); });
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const res = editando ? await api.actualizar(editando.id, $("m-nombre").value, $("m-desc").value)
+                       : await api.crear($("m-nombre").value, $("m-desc").value);
+  toast(res); if (res.err) return;
+  cerrar(); if (res.id) seleccionar(res.id); else render();
+});
+$("m-eliminar").onclick = async () => {
+  const res = await api.eliminar(editando.id); toast(res); if (res.err) return;
+  cerrar(); seleccionar(S.roles[0].id);
+};
+iniciar();
+</script>
+</body>
+</html>
