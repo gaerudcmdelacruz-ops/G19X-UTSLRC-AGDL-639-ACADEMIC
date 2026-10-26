@@ -14,7 +14,7 @@ const preguntar = (q, ocultar = false) => new Promise(r => { oculto = false; pro
   try {
     const correo = (await preguntar('Correo del usuario [admin@omnidesk.local]: ')).trim() || 'admin@omnidesk.local';
     const u = await callSP('sp_leer_usuario_login', [correo]);
-    if (u.err !== 0) { console.log('\nNo existe un usuario con ese correo. ¿Cargaste 08_demo_data.sql?'); return; }
+    if (u.err !== 0) { console.log('\nNo existe un usuario con ese correo. ¿Cargaste db/datos-demo.sql?'); return; }
     const p1 = await preguntar('Nueva contraseña (mínimo 8 caracteres): ', true);
     if (p1.length < 8) { console.log('La contraseña es demasiado corta. No se hizo ningún cambio.'); return; }
     const p2 = await preguntar('Repite la contraseña: ', true);

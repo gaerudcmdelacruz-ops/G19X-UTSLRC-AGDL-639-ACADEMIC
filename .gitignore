@@ -4,3 +4,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 credenciales.json
+__pycache__/
+*.pyc
+.venv/
+venv/

@@ -25,7 +25,6 @@ app.use('/api', require('./rutas-reportes'));
 app.use('/api', require('./rutas-ia'));
 app.use('/api', require('./rutas-clientes'));
 app.use('/api', require('./rutas-auditoria'));
-// Siguientes: usuarios, clientes, canales, conversaciones, reportes...
 
 app.use('/api', (req, res) => res.status(404).json({ error: { codigo: 404, mensaje: 'Ruta no encontrada.' } }));
 app.use((err, req, res, next) => {          // errores inesperados: se registran en consola, no se exponen al cliente

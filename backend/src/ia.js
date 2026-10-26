@@ -7,8 +7,14 @@ const limpia = v => (v || '').trim();
 const GEMINI_MODELO = () => limpia(process.env.GEMINI_MODEL) || 'gemini-3.8-flash';
 const CLAUDE_MODELO = () => limpia(process.env.CLAUDE_MODEL) || 'claude-haiku-5-5';
 
+// Servicio de IA en Python (FastAPI, carpeta ia-python). Si IA_SERVICIO_URL está definida, el análisis se le delega
+// y las claves de Gemini/Claude viven en ese servicio. Si no, este archivo habla directo con Gemini/Claude.
+const SERVICIO = () => limpia(process.env.IA_SERVICIO_URL).replace(/\/+$/, '');
+let ULTIMO_MODELO = null;   // modelo informado por el servicio Python en el último análisis
+
 // IA_PROVEEDOR=gemini|claude. Si no se define, se usa el que tenga clave (Gemini primero).
 function proveedor() {
+  if (SERVICIO()) return 'python';
   const p = limpia(process.env.IA_PROVEEDOR).toLowerCase();
   if (p === 'gemini' && limpia(process.env.GEMINI_API_KEY)) return 'gemini';
   if (p === 'claude' && limpia(process.env.ANTHROPIC_API_KEY)) return 'claude';
@@ -17,7 +23,7 @@ function proveedor() {
   return null;
 }
 const iaActiva = () => proveedor() !== null;
-const modelo = () => ({ gemini: GEMINI_MODELO(), claude: CLAUDE_MODELO() })[proveedor()] || null;
+const modelo = () => ({ gemini: GEMINI_MODELO(), claude: CLAUDE_MODELO(), python: ULTIMO_MODELO })[proveedor()] || null;
 
 const ETIQUETAS = [
   'Urgencia alta', 'Lenguaje negativo', 'Escalación posible', 'Solicitud de reembolso', 'Problema de entrega',
@@ -124,11 +130,52 @@ async function conGemini(datos) {
   catch { throw new ErrorIA(502, 'La IA devolvió una respuesta inesperada. Intenta de nuevo.'); }
 }
 
+// ---------------- Servicio Python (FastAPI) ----------------
+async function conServicio(datos) {
+  const url = SERVICIO();
+  const cabeceras = { 'content-type': 'application/json' };
+  if (limpia(process.env.IA_SERVICIO_CLAVE)) cabeceras['x-servicio-clave'] = limpia(process.env.IA_SERVICIO_CLAVE);
+  // Se manda solo lo necesario, con la forma que el servicio espera
+  const cuerpo = {
+    cliente: datos.cliente, nivel: datos.nivel, canal: datos.canal, asunto: datos.asunto, prioridad: datos.prioridad,
+    anterior: datos.anterior || null,
+    mensajes: datos.mensajes.map(m => ({ remitente: String(m.remitente || ''), autor: m.autor || null, contenido: String(m.contenido || '') }))
+  };
+  let resp;
+  try { resp = await fetch(url + '/analizar', { method: 'POST', headers: cabeceras, body: JSON.stringify(cuerpo), signal: AbortSignal.timeout(45000) }); }
+  catch (e) {
+    throw new ErrorIA(503, e.name === 'TimeoutError'
+      ? 'El servicio de IA en Python tardó demasiado en responder.'
+      : `No se pudo conectar con el servicio de IA en Python (${url}). Arráncalo con: uvicorn main:app --port 8000`);
+  }
+  let datosResp = null; try { datosResp = await resp.json(); } catch {}
+  if (!resp.ok) {
+    console.error('[IA/python] error', resp.status, JSON.stringify(datosResp));
+    if (datosResp && typeof datosResp.mensaje === 'string') throw new ErrorIA(Number(datosResp.codigo) || 502, datosResp.mensaje);
+    throw new ErrorIA(502, 'El servicio de IA en Python rechazó la petición. Revisa su ventana de PowerShell.');
+  }
+  if (!datosResp || typeof datosResp !== 'object') throw new ErrorIA(502, 'El servicio de IA en Python devolvió una respuesta inesperada.');
+  if (datosResp.modelo) ULTIMO_MODELO = String(datosResp.modelo);
+  return datosResp;
+}
+
+// Estado para GET /api/ia/estado. Con el servicio Python, comprueba que esté encendido.
+async function estado() {
+  if (!SERVICIO()) return { activa: iaActiva(), proveedor: proveedor(), modelo: modelo() };
+  try {
+    const r = await fetch(SERVICIO() + '/salud', { signal: AbortSignal.timeout(3000) });
+    const s = await r.json();
+    return { activa: !!s.activa, proveedor: 'python', motor: s.proveedor || null, modelo: s.modelo || null, servicio: SERVICIO() };
+  } catch {
+    return { activa: false, proveedor: 'python', motor: null, modelo: null, servicio: SERVICIO(), motivo: 'El servicio de IA en Python no responde' };
+  }
+}
+
 // datos: { cliente, nivel, canal, asunto, prioridad, mensajes:[{remitente, autor, contenido}], anterior? }
 async function analizar(datos) {
   const p = proveedor();
   if (!p) throw new ErrorIA(503, 'La IA no está configurada en el servidor (falta GEMINI_API_KEY o ANTHROPIC_API_KEY).');
-  const r = (p === 'gemini' ? await conGemini(datos) : await conClaude(datos)) || {};
+  const r = (p === 'python' ? await conServicio(datos) : p === 'gemini' ? await conGemini(datos) : await conClaude(datos)) || {};
 
   // Validación defensiva: no se confía en la forma de lo que llega, venga de donde venga
   const puntaje = Math.max(0, Math.min(100, Math.round(Number(r.puntaje))));
@@ -142,4 +189,4 @@ async function analizar(datos) {
   };
 }
 
-module.exports = { analizar, iaActiva, proveedor, modelo, ErrorIA };
+module.exports = { analizar, estado, iaActiva, proveedor, modelo, ErrorIA };

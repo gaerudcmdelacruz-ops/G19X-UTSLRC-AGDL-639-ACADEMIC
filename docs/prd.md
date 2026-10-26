@@ -38,3 +38,9 @@ Los equipos de soporte pierden tiempo saltando entre canales y no saben qué cli
 ## Riesgos
 - Costos de APIs de mensajería (WhatsApp/Instagram)
 - Permisos en el token: los cambios aplican al volver a iniciar sesión
+
+## Arquitectura de IA
+- Servicio independiente en Python + FastAPI (`ia-python/`), con rutas `POST /analizar` y `GET /salud`.
+- El backend Node delega el análisis y conserva caché, límites, permisos y persistencia.
+- Proveedores de IA intercambiables (Gemini, Claude) sin tocar el resto del sistema.
+- Ver `docs/decisiones-tecnicas.md`.

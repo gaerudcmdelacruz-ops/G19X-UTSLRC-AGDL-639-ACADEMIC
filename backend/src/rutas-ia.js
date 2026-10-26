@@ -5,7 +5,7 @@ const express = require('express');
 const { callSP } = require('./db');
 const { autenticar, requierePermiso } = require('./auth');
 const { falloSP } = require('./http');
-const { analizar, iaActiva, proveedor, modelo, ErrorIA } = require('./ia');
+const { analizar, estado, iaActiva, ErrorIA } = require('./ia');
 const { avisar } = require('./tiempo-real');
 const { cargarConv, ver } = require('./rutas-conversaciones');
 
@@ -25,7 +25,7 @@ function limite(idUsuario) {
 }
 const sentimientoDe = p => (p < 40 ? 'Molesto' : p < 70 ? 'Neutral' : 'Satisfecho');
 
-router.get('/ia/estado', autenticar, (req, res) => res.json({ activa: iaActiva(), proveedor: proveedor(), modelo: modelo() }));
+router.get('/ia/estado', autenticar, h(async (req, res) => res.json(await estado())));
 
 // body { regenerar: true } fuerza un nuevo análisis y pide un borrador distinto
 router.post('/conversaciones/:id/ia', ...ver, requierePermiso('conversaciones.responder'), h(async (req, res) => {

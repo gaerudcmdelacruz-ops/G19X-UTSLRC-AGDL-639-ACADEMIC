@@ -1,6 +1,6 @@
 -- =====================================================================
 -- OmniDesk · Base de datos v2 · 99 · PRUEBAS DE HUMO
--- Ejecutar DESPUÉS de 01-07 y 08 (datos demo), preferiblemente bloque por bloque
+-- Ejecutar DESPUÉS de db/base-de-datos.sql y db/datos-demo.sql, preferiblemente bloque por bloque
 -- en MySQL Workbench. Cada bloque indica el resultado esperado.
 -- Estas pruebas insertan algunas filas extra (rol 'Auditor', una conversación).
 -- =====================================================================

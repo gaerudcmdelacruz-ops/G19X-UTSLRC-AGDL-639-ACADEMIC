@@ -1,4 +1,4 @@
-// Reportes de atención. Permiso: reportes.ver. Usa los SP del Paso B (07_sp_reportes_auditoria.sql).
+// Reportes de atención. Permiso: reportes.ver. Usa los procedimientos almacenados de db/base-de-datos.sql.
 const express = require('express');
 const { callSP } = require('./db');
 const { autenticar, requierePermiso } = require('./auth');
