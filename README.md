@@ -19,7 +19,7 @@ omnidesk/
 ├── frontend/   Páginas HTML y assets/
 ├── ia-python/  Servicio de IA (Python + FastAPI)
 ├── db/         base-de-datos.sql (esquema + procedimientos), datos-demo.sql, pruebas-humo.sql
-├── docs/       mvp.md y prd.md
+├── docs/       mvp, prd, decisiones-tecnicas, api, backlog y evidencias/
 └── README.md
 ```
 
@@ -100,11 +100,23 @@ Copia la carpeta `frontend` dentro de `C:\xampp\htdocs\` (por ejemplo `C:\xampp\
 
 Inicia sesión con el usuario de prueba.
 
+**Widget de chat web (público, sin login):** abre `http://localhost/omnidesk/widget.html`, escribe un nombre y un mensaje y envía. Aparece una conversación nueva en el canal Web Chat dentro del panel. Si el backend no está en `localhost:3000`, cambia `API_URL` dentro de `widget.html`.
+
+## Uso de IA
+
+- **En el producto:** el botón *Analizar con IA* envía los mensajes de una conversación a Gemini o Claude (por el servicio Python o directo desde Node) y devuelve puntaje de sentimiento, etiquetas, resumen y una respuesta sugerida. La IA nunca envía nada sola: el agente decide. No se entrenan modelos; solo se consulta uno externo.
+- **En el desarrollo:** el código, la base de datos y la documentación se elaboraron con ayuda de Claude (asistente de IA). Todo fue revisado, ejecutado y probado por el equipo.
+
 ## Variables de entorno (`backend/.env`)
 
 | Variable | Para qué |
 |---|---|
 | `JWT_SECRET` | Firma de sesiones (obligatoria) |
+| `DB_HOST` / `DB_PORT` | Servidor y puerto de MariaDB (por defecto `localhost` / `3306`) |
+| `DB_USER` / `DB_PASSWORD` | Usuario y contraseña (por defecto `root` y vacía, como en XAMPP) |
+| `DB_NAME` | Nombre de la base (por defecto `omnidesk_db`) |
+| `PORT` | Puerto del backend (por defecto `3000`) |
+| `CORS_ORIGIN` | Orígenes permitidos, separados por coma (por defecto `http://localhost`) |
 | `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` | IA (una de las dos) |
 | `IA_PROVEEDOR` | `gemini` o `claude` si tienes ambas |
 | `IA_SERVICIO_URL` | Dirección del servicio Python (ej. `http://localhost:8000`). Opcional |
@@ -116,5 +128,8 @@ El archivo `.env` **no se sube** a GitHub (está en `.gitignore`).
 ## Documentación
 
 - [Decisiones técnicas](docs/decisiones-tecnicas.md)
+- [API](docs/api.md)
+- [Backlog y plan](docs/backlog.md)
+- [Evidencia de instalación limpia](docs/evidencias/instalacion-limpia.md)
 - [MVP](docs/mvp.md)
 - [PRD](docs/prd.md)

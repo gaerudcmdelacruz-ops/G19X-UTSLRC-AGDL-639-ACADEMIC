@@ -66,6 +66,7 @@
     </p>
 </footer>
 </div>
+<script src="assets/omnidesk-layout.js?v=5"></script>
 <script>
   function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');
@@ -90,7 +91,7 @@
     btnSpinner.classList.remove('hidden');
     submitBtn.disabled = true;
     try {
-      const r = await fetch('http://localhost:3000/api/auth/login', {
+      const r = await fetch(OmniDesk.API_URL + '/api/auth/login', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo: document.getElementById('email').value, password: document.getElementById('password').value })
       });

@@ -43,7 +43,7 @@
 </div>
 <div id="toast" class="hidden fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border text-sm font-medium"></div>
 
-<script src="assets/omnidesk-layout.js?v=4"></script>
+<script src="assets/omnidesk-layout.js?v=5"></script>
 <script>
 OmniDesk.mount({ permiso: "roles.ver", seccion: "configuracion", sub: "roles" });
 
@@ -71,7 +71,7 @@ const api = {
 
 /* ---------- UI ---------- */
 const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = OmniDesk.esc;
 const MOD = { conversaciones: "Conversaciones", clientes: "Clientes", canales: "Canales", agentes: "Agentes", roles: "Roles", reportes: "Reportes", auditoria: "Auditoría", perfil: "Perfil" };
 let draft = new Set();
 

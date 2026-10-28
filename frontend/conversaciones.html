@@ -258,11 +258,11 @@
 <button id="nc-crear" type="button" class="px-4 py-2 rounded-lg bg-[#10b981] hover:bg-[#34d399] text-[#003824] text-xs font-bold">Crear conversación</button>
 </div></div></div>
 <div id="emoji-pop" class="hidden fixed z-[65] p-2 rounded-xl bg-[#000f21] border border-[#1e293b] shadow-2xl grid grid-cols-8 gap-1"></div>
-<script src="assets/omnidesk-layout.js?v=4"></script>
+<script src="assets/omnidesk-layout.js?v=5"></script>
 <script>OmniDesk.mount({ permiso: "conversaciones.ver_propias", seccion: "conversaciones" });</script>
 <script>
 const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = OmniDesk.esc;
 const hora = f => new Date(f).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: false });
 const ini = n => String(n || "?").split(" ").map(x => x[0]).slice(0, 2).join("").toUpperCase();
 const NIVEL = { Gold: ["★ Gold Member", "bg-amber-400/10 border-amber-400/30 text-amber-300"], Silver: ["Silver Member", "bg-slate-400/10 border-slate-400/30 text-slate-300"],

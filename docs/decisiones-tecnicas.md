@@ -17,7 +17,7 @@ Este documento dice, sin adornos, qué se usó, qué no y por qué.
 | Microsoft Entra ID | ❌ No | Login propio: JWT + bcrypt + roles y permisos (25 permisos) + bloqueo por intentos |
 | Power BI | ⚠ Parcial | Pantalla de Reportes propia; sin tableros de Power BI |
 | API de WhatsApp Business | ⚠ Pendiente | Planeada. Alternativas gratuitas: chat web propio, Telegram, correo |
-| Scrum | ✅ Metodología | Backlog y plan en `docs/` |
+| Scrum | ✅ Metodología | Backlog y plan en [`backlog.md`](backlog.md) |
 
 ## Por qué esta arquitectura
 
@@ -25,6 +25,10 @@ Este documento dice, sin adornos, qué se usó, qué no y por qué.
 - **IA separada en su propio servicio:** el backend de Node no habla con el proveedor de IA; se lo pide al servicio Python por HTTP. Cambiar de Gemini a Claude o a Azure OpenAI se hace solo dentro de `ia-python/`.
 - **Degradación segura:** si no se define `IA_SERVICIO_URL`, el backend Node llama directo a Gemini/Claude; si el servicio Python se apaga, solo falla el análisis de IA y el resto del sistema sigue.
 - **La IA nunca actúa sola:** la respuesta sugerida solo se copia al cuadro de texto; el agente decide si la envía.
+
+## Qué implementación de IA es la principal
+
+El servicio **Python/FastAPI** (`ia-python/`) es la implementación principal cuando `IA_SERVICIO_URL` está definida. Si no lo está, el backend Node usa su propio módulo (`backend/src/ia.js`) como respaldo, con el mismo contrato de entrada y salida.
 
 ## Flujo del análisis de IA
 

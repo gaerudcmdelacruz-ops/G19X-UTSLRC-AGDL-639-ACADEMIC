@@ -13,6 +13,7 @@
 - Análisis con IA: puntaje de sentimiento, etiquetas, resumen y respuesta sugerida (nunca se envía sola)
 - Reportes y pantalla de Auditoría
 - Modo demo para simular mensajes del cliente
+- Widget de chat web público (`frontend/widget.html`): crea un ticket en el canal Web Chat
 
 ## Fuera del MVP
 
@@ -23,7 +24,6 @@
 
 ## Siguiente
 
-1. Widget de chat web propio (costo 0)
-2. Telegram Bot API (gratis)
-3. Correo IMAP/SMTP
-4. Canales de Meta (WhatsApp/Instagram), con costos y verificación
+1. Telegram Bot API (gratis)
+2. Correo IMAP/SMTP
+3. Canales de Meta (WhatsApp/Instagram), con costos y verificación

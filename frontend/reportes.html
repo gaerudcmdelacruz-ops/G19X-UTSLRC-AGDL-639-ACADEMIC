@@ -116,11 +116,11 @@
 </div>
 </main>
 
-<script src="assets/omnidesk-layout.js?v=4"></script>
+<script src="assets/omnidesk-layout.js?v=5"></script>
 <script>OmniDesk.mount({ permiso: "reportes.ver", seccion: "reportes" });</script>
 <script>
 const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = OmniDesk.esc;
 const num = v => v == null ? null : Number(v);
 const col = c => /^#[0-9a-fA-F]{6}$/.test(c || "") ? c : "#10b981";
 const ini = n => String(n || "?").split(" ").map(x => x[0]).slice(0, 2).join("").toUpperCase();

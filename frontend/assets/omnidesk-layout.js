@@ -2,6 +2,8 @@
    Uso: <div id="app-header"></div> [<div id="app-sidebar"></div>] y OmniDesk.mount({ seccion, sub }) */
 window.OmniDesk = {
   API_URL: "http://localhost:3000",
+  // Escapa texto antes de meterlo en innerHTML (evita XSS). Única copia: úsala como OmniDesk.esc()
+  esc: s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])),
   _datos: JSON.parse(localStorage.getItem("omnidesk_sesion") || "null"),
   get session() { const d = this._datos; return { nombre: d ? d.usuario.nombre : "", permisos: d ? d.usuario.permisos : [], token: d ? d.token : null }; },
   // Llama a la API con el token. Si la sesión expiró (401), vuelve al login.

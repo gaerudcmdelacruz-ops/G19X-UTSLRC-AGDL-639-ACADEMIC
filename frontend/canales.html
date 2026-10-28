@@ -177,11 +177,11 @@
 </div>
 </main>
 </div>
-<script src="assets/omnidesk-layout.js?v=4"></script>
+<script src="assets/omnidesk-layout.js?v=5"></script>
 <script>OmniDesk.mount({ permiso: "canales.ver", seccion: "configuracion", sub: "canales" });</script>
 <script>
 const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = OmniDesk.esc;
 let CANALES = [], editando = null;
 
 async function call(ruta, op) {

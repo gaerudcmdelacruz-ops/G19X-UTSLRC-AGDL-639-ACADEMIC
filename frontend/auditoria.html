@@ -73,11 +73,11 @@
 </div>
 </main>
 </div>
-<script src="assets/omnidesk-layout.js?v=4"></script>
+<script src="assets/omnidesk-layout.js?v=5"></script>
 <script>OmniDesk.mount({ permiso: "auditoria.ver", seccion: "configuracion", sub: "auditoria" });</script>
 <script>
 const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = OmniDesk.esc;
 async function call(ruta, op) {
   let r; try { r = await OmniDesk.api(ruta, op); } catch { return { err: 503, text: "No se pudo conectar con el servidor. ¿Está encendido (npm start)?" }; }
   if (!r) return { err: 401, text: "Tu sesión expiró." };

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OmniDesk — Escríbenos</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#031427;color:#e2e8f0;font-family:system-ui,sans-serif}
+.card{width:100%;max-width:420px;margin:16px;background:#0b1c30;border:1px solid #2a3a4f;border-radius:16px;padding:28px}
+h1{margin:0 0 4px;font-size:22px;color:#fff}p.sub{margin:0 0 20px;color:#94a3b8;font-size:14px}
+label{display:block;margin:14px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;font-weight:600}
+input,textarea{width:100%;box-sizing:border-box;background:#071727;color:#fff;border:1px solid #1e2e42;border-radius:8px;padding:10px 12px;font:inherit}
+input:focus,textarea:focus{outline:none;border-color:#10b981}
+button{margin-top:20px;width:100%;padding:12px;border:0;border-radius:8px;background:#10b981;color:#002113;font-weight:700;font-size:15px;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+#res{margin-top:16px;font-size:14px;min-height:20px}.ok{color:#34d399}.mal{color:#f87171}
+</style></head><body>
+<form class="card" id="f">
+<h1>¿En qué te ayudamos?</h1><p class="sub">Déjanos tu mensaje y un agente te responderá.</p>
+<label for="nombre">Nombre</label><input id="nombre" maxlength="100" required>
+<label for="correo">Correo (opcional)</label><input id="correo" type="email" maxlength="100">
+<label for="mensaje">Mensaje</label><textarea id="mensaje" rows="4" maxlength="1000" required></textarea>
+<button id="b" type="submit">Enviar</button><div id="res" role="status"></div>
+</form>
+<script>
+// Cambia esta URL si el backend no corre en tu propia máquina.
+const API_URL = 'http://localhost:3000';
+const f = document.getElementById('f'), res = document.getElementById('res'), b = document.getElementById('b');
+f.addEventListener('submit', async e => {
+  e.preventDefault(); b.disabled = true; res.className = ''; res.textContent = 'Enviando…';
+  try {
+    const r = await fetch(API_URL + '/api/widget/mensajes', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: nombre.value, correo: correo.value, mensaje: mensaje.value })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) { res.className = 'ok'; res.textContent = d.mensaje; mensaje.value = ''; }
+    else { res.className = 'mal'; res.textContent = (d.error && d.error.mensaje) || 'No se pudo enviar.'; }
+  } catch (_) { res.className = 'mal'; res.textContent = 'No hay conexión con el servidor.'; }
+  b.disabled = false;
+});
+</script></body></html>
