@@ -10,6 +10,7 @@ input,textarea{width:100%;box-sizing:border-box;background:#071727;color:#fff;bo
 input:focus,textarea:focus{outline:none;border-color:#10b981}
 button{margin-top:20px;width:100%;padding:12px;border:0;border-radius:8px;background:#10b981;color:#002113;font-weight:700;font-size:15px;cursor:pointer}
 button:disabled{opacity:.6;cursor:wait}
+#hilo p{margin:8px 0;padding:8px 12px;border-radius:8px;background:#071727;font-size:14px;white-space:pre-wrap}#hilo p.agente{background:#002113;border:1px solid #10b981}#hilo{margin-top:16px}#nuevo{background:#1e2e42;color:#e2e8f0}
 #res{margin-top:16px;font-size:14px;min-height:20px}.ok{color:#34d399}.mal{color:#f87171}
 </style></head><body>
 <form class="card" id="f">
@@ -18,11 +19,50 @@ button:disabled{opacity:.6;cursor:wait}
 <label for="correo">Correo (opcional)</label><input id="correo" type="email" maxlength="100">
 <label for="mensaje">Mensaje</label><textarea id="mensaje" rows="4" maxlength="1000" required></textarea>
 <button id="b" type="submit">Enviar</button><div id="res" role="status"></div>
+<div id="hilo" aria-live="polite"></div>
+<button id="nuevo" type="button" hidden>Escribir un mensaje nuevo</button>
 </form>
 <script>
 // Cambia esta URL si el backend no corre en tu propia máquina.
 const API_URL = 'http://localhost:3000';
+const CLAVE = 'omnidesk_widget_token';
 const f = document.getElementById('f'), res = document.getElementById('res'), b = document.getElementById('b');
+const hilo = document.getElementById('hilo'), nuevo = document.getElementById('nuevo');
+const campos = [nombre, correo, mensaje];
+let temporizador = null;
+
+const guardado = () => { try { return localStorage.getItem(CLAVE); } catch (_) { return null; } };
+const guardar = t => { try { t ? localStorage.setItem(CLAVE, t) : localStorage.removeItem(CLAVE); } catch (_) {} };
+
+function modoConversacion(activa) {
+  campos.forEach(c => { c.disabled = activa; c.style.display = activa ? 'none' : ''; });
+  document.querySelectorAll('label').forEach(l => l.style.display = activa ? 'none' : '');
+  b.style.display = activa ? 'none' : ''; nuevo.hidden = !activa;
+  if (!activa) { hilo.replaceChildren(); clearInterval(temporizador); temporizador = null; }
+}
+
+async function cargarRespuestas() {
+  const t = guardado(); if (!t) return;
+  try {
+    const r = await fetch(API_URL + '/api/widget/mensajes?token=' + encodeURIComponent(t));
+    if (r.status === 404) { guardar(null); modoConversacion(false); return; }
+    if (!r.ok) return;
+    const { mensajes } = await r.json();
+    hilo.replaceChildren();
+    for (const m of mensajes) {
+      const p = document.createElement('p');
+      p.className = m.remitente === 'Agente' ? 'agente' : '';
+      p.textContent = (m.remitente === 'Agente' ? 'Agente: ' : 'Tú: ') + m.contenido;
+      hilo.appendChild(p);
+    }
+  } catch (_) { /* sin conexión: se reintenta en el siguiente ciclo */ }
+}
+
+function seguirConversacion() {
+  modoConversacion(true); cargarRespuestas();
+  clearInterval(temporizador); temporizador = setInterval(cargarRespuestas, 10000);
+}
+
 f.addEventListener('submit', async e => {
   e.preventDefault(); b.disabled = true; res.className = ''; res.textContent = 'Enviando…';
   try {
@@ -31,9 +71,12 @@ f.addEventListener('submit', async e => {
       body: JSON.stringify({ nombre: nombre.value, correo: correo.value, mensaje: mensaje.value })
     });
     const d = await r.json().catch(() => ({}));
-    if (r.ok) { res.className = 'ok'; res.textContent = d.mensaje; mensaje.value = ''; }
+    if (r.ok) { res.className = 'ok'; res.textContent = d.mensaje; mensaje.value = ''; guardar(d.token); seguirConversacion(); }
     else { res.className = 'mal'; res.textContent = (d.error && d.error.mensaje) || 'No se pudo enviar.'; }
   } catch (_) { res.className = 'mal'; res.textContent = 'No hay conexión con el servidor.'; }
   b.disabled = false;
 });
+
+nuevo.addEventListener('click', () => { guardar(null); modoConversacion(false); res.textContent = ''; });
+if (guardado()) seguirConversacion();
 </script></body></html>
