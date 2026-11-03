@@ -137,6 +137,7 @@ CREATE TABLE conversaciones (
     fecha_primera_respuesta DATETIME NULL,                  -- lo mantiene un trigger (métrica de reportes)
     fecha_cierre            DATETIME NULL,                  -- lo mantiene un trigger
     fecha_actualizacion     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    token_publico           CHAR(48) NULL UNIQUE,           -- solo para el widget web: el cliente lee sus respuestas con este token
     CONSTRAINT chk_conv_puntaje CHECK (puntaje_sentimiento IS NULL OR puntaje_sentimiento <= 100),
     INDEX idx_conv_cliente        (id_cliente, fecha_creacion),
     INDEX idx_conv_agente_estado  (id_agente, estado),
