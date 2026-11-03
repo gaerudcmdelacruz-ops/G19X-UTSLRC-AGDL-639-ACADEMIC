@@ -10,6 +10,7 @@ Errores: `{ "error": { "codigo": 422, "mensaje": "..." } }`. Un permiso faltante
 | GET | `/api/auth/yo` | sesión | Datos y permisos del usuario actual |
 | POST | `/api/auth/logout` | sesión | Cierra sesión |
 | POST | `/api/widget/mensajes` | público (5 por minuto por IP) | Widget web: crea cliente, conversación y primer mensaje en el canal Web Chat |
+| GET | `/api/widget/mensajes?token=…` | público (30 por minuto por IP) | Widget web: lee los mensajes de la conversación dueña del token (solo remitente, contenido y fecha). 404 si el token no existe |
 | GET | `/api/conversaciones` | `conversaciones.ver_propias` o `ver_todas` | Lista de conversaciones |
 | POST | `/api/conversaciones` | `conversaciones.responder` | Crea una conversación nueva |
 | GET | `/api/conversaciones/:id` | ver_propias / ver_todas | Detalle |

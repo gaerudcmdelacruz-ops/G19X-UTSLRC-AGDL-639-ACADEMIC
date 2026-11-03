@@ -13,7 +13,7 @@
 - Análisis con IA: puntaje de sentimiento, etiquetas, resumen y respuesta sugerida (nunca se envía sola)
 - Reportes y pantalla de Auditoría
 - Modo demo para simular mensajes del cliente
-- Widget de chat web público (`frontend/widget.html`): crea un ticket en el canal Web Chat
+- Widget de chat web público (`frontend/widget.html`): crea un ticket en el canal Web Chat y muestra al cliente las respuestas del agente
 
 ## Fuera del MVP
 

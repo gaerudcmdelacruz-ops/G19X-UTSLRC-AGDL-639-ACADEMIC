@@ -18,7 +18,7 @@ omnidesk/
 ├── backend/    API (src/, scripts/, package.json, .env.example)
 ├── frontend/   Páginas HTML y assets/
 ├── ia-python/  Servicio de IA (Python + FastAPI)
-├── db/         base-de-datos.sql (esquema + procedimientos), datos-demo.sql, pruebas-humo.sql
+├── db/         base-de-datos.sql (esquema + procedimientos), datos-demo.sql, pruebas-humo.sql, migracion-token-widget.sql
 ├── docs/       mvp, prd, decisiones-tecnicas, api, backlog y evidencias/
 └── README.md
 ```
@@ -100,7 +100,9 @@ Copia la carpeta `frontend` dentro de `C:\xampp\htdocs\` (por ejemplo `C:\xampp\
 
 Inicia sesión con el usuario de prueba.
 
-**Widget de chat web (público, sin login):** abre `http://localhost/omnidesk/widget.html`, escribe un nombre y un mensaje y envía. Aparece una conversación nueva en el canal Web Chat dentro del panel. Si el backend no está en `localhost:3000`, cambia `API_URL` dentro de `widget.html`.
+**Widget de chat web (público, sin login):** abre `http://localhost/omnidesk/widget.html`, escribe un nombre y un mensaje y envía. Aparece una conversación nueva en el canal Web Chat dentro del panel. El cliente ve las respuestas del agente: la página guarda un token secreto y consulta la conversación cada 10 segundos. Si el backend no está en `localhost:3000`, cambia `API_URL` dentro de `widget.html`.
+
+> Si tu base de datos ya existía antes de este cambio, corre una sola vez `db/migracion-token-widget.sql` (agrega la columna `token_publico`). Una base nueva ya la trae.
 
 ## Uso de IA
 
