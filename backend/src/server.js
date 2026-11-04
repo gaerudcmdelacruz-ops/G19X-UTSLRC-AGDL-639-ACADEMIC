@@ -10,6 +10,12 @@ const ORIGENES = (process.env.CORS_ORIGIN || 'http://localhost').split(',').map(
 app.use(cors({ origin: ORIGENES }));
 app.use(express.json({ limit: '1mb' }));
 
+// Fotos de perfil: archivos con nombre generado, solo lectura. nosniff evita que el navegador los trate como otra cosa.
+app.use('/uploads/avatares', express.static(require('./rutas-perfil').DIR_AVATARES, {
+  index: false, dotfiles: 'deny', maxAge: '7d', immutable: true,
+  setHeaders: res => res.setHeader('X-Content-Type-Options', 'nosniff')
+}));
+
 app.get('/api/salud', async (req, res) => {
   try { await pool.query('SELECT 1'); res.json({ ok: true, base_de_datos: 'conectada' }); }
   catch (e) { res.status(503).json({ ok: false, base_de_datos: 'sin conexión', detalle: e.code || e.message }); }

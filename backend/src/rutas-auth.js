@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { callSP } = require('./db');
+const { callSP, pool } = require('./db');
 const { firmar, autenticar } = require('./auth');
 const { falloSP } = require('./http');
 
@@ -36,13 +36,18 @@ router.post('/login', async (req, res, next) => {
 
     const usuario = { id: user.id_usuario, nombre: user.nombre_completo, correo: user.correo,
                       rol: user.rol, permisos: p.rows.map(r => r.codigo) };
-    res.json({ token: firmar({ sub: usuario.id, ...usuario }), usuario });
+    const token = firmar({ sub: usuario.id, ...usuario });            // la foto no va en el token: puede cambiar
+    const [f] = await pool.query('SELECT foto FROM usuarios WHERE id_usuario = ?', [usuario.id]);
+    res.json({ token, usuario: { ...usuario, foto: f[0] ? f[0].foto : null } });
   } catch (e) { next(e); }
 });
 
-router.get('/yo', autenticar, (req, res) => {
-  const { sub, nombre, correo, rol, permisos } = req.user;
-  res.json({ usuario: { id: sub, nombre, correo, rol, permisos } });
+router.get('/yo', autenticar, async (req, res, next) => {
+  try {
+    const { sub, nombre, correo, rol, permisos } = req.user;
+    const [f] = await pool.query('SELECT foto FROM usuarios WHERE id_usuario = ?', [sub]);
+    res.json({ usuario: { id: sub, nombre, correo, rol, permisos, foto: f[0] ? f[0].foto : null } });
+  } catch (e) { next(e); }
 });
 
 router.post('/logout', autenticar, async (req, res, next) => {
