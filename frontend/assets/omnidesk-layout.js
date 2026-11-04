@@ -12,7 +12,23 @@ window.OmniDesk = {
   // Escapa texto antes de meterlo en innerHTML (evita XSS). Única copia: úsala como OmniDesk.esc()
   esc: s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])),
   _datos: JSON.parse(localStorage.getItem("omnidesk_sesion") || "null"),
-  get session() { const d = this._datos; return { nombre: d ? d.usuario.nombre : "", permisos: d ? d.usuario.permisos : [], token: d ? d.token : null }; },
+  get session() { const d = this._datos; return { nombre: d ? d.usuario.nombre : "", permisos: d ? d.usuario.permisos : [], token: d ? d.token : null, foto: d ? d.usuario.foto || null : null }; },
+  // Avatar: la foto si existe; si no, las iniciales. Los elementos con data-avatar se repintan con pintarAvatares().
+  iniciales(nombre) { return String(nombre || "?").split(" ").filter(Boolean).map(n => n[0]).slice(0, 2).join("").toUpperCase(); },
+  fotoUrl(foto) { return foto ? this.API_URL + "/uploads/avatares/" + encodeURIComponent(foto) : null; },
+  avatarHtml() {
+    const url = this.fotoUrl(this.session.foto);
+    return url ? `<img src="${url}" alt="Foto de ${this.esc(this.session.nombre)}" class="w-full h-full object-cover">`
+               : `<span class="text-[13px] font-bold">${this.esc(this.iniciales(this.session.nombre))}</span>`;
+  },
+  pintarAvatares() { document.querySelectorAll("[data-avatar]").forEach(el => { el.innerHTML = this.avatarHtml(); }); },
+  // Guarda la foto nueva (o null) en la sesión del navegador y actualiza todos los avatares visibles.
+  guardarFoto(foto) {
+    if (!this._datos) return;
+    this._datos.usuario.foto = foto || null;
+    try { localStorage.setItem("omnidesk_sesion", JSON.stringify(this._datos)); } catch {}
+    this.pintarAvatares();
+  },
   // Llama a la API con el token. Si la sesión expiró (401), vuelve al login.
   async api(ruta, opciones = {}) {
     const r = await fetch(this.API_URL + ruta, { ...opciones,
@@ -59,6 +75,7 @@ window.OmniDesk = {
       </div>
       <div class="flex items-center gap-3 text-xs font-medium text-emerald-400">
         <span class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-container-high"><span class="w-2 h-2 rounded-full bg-primary"></span>En línea</span>
+        <a href="mi-perfil.html" data-avatar title="${this.esc(this.session.nombre)} · Mi perfil" class="w-9 h-9 rounded-full overflow-hidden bg-[#031427] border border-emerald-500/40 text-emerald-300 flex items-center justify-center hover:border-emerald-400">${this.avatarHtml()}</a>
         <button data-salir class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface hover:bg-surface-container-highest" title="${this.session.nombre} · Cerrar sesión"><span class="material-symbols-outlined text-[20px]">logout</span></button>
       </div>
     </header>`;
