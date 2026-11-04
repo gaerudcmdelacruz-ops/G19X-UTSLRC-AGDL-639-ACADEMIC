@@ -40,6 +40,9 @@ Errores: `{ "error": { "codigo": 422, "mensaje": "..." } }`. Un permiso faltante
 | GET | `/api/perfil` | sesión | Perfil propio |
 | PUT | `/api/perfil` | `perfil.editar_propio` | Edita perfil propio |
 | POST | `/api/perfil/password` | `perfil.editar_propio` | Cambia la contraseña propia |
+| PUT | `/api/perfil/foto` | `perfil.editar_propio` | Sube la foto propia: cuerpo binario `image/png`, `image/jpeg` o `image/webp` (máx. 1 MB). Valida los bytes del archivo y lo guarda con nombre generado (10 cambios por minuto) |
+| DELETE | `/api/perfil/foto` | `perfil.editar_propio` | Quita la foto propia (vuelven las iniciales) |
+| GET | `/uploads/avatares/:archivo` | público (solo lectura) | Sirve las fotos de perfil guardadas |
 | GET | `/api/permisos` | `roles.ver` | Catálogo de permisos |
 | GET | `/api/roles` | `roles.ver` | Lista de roles |
 | GET | `/api/roles/:id` | `roles.ver` | Detalle de rol |

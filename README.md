@@ -18,7 +18,7 @@ omnidesk/
 ├── backend/    API (src/, scripts/, package.json, .env.example)
 ├── frontend/   Páginas HTML y assets/
 ├── ia-python/  Servicio de IA (Python + FastAPI)
-├── db/         base-de-datos.sql (esquema + procedimientos), datos-demo.sql, pruebas-humo.sql, migracion-token-widget.sql
+├── db/         base-de-datos.sql (esquema + procedimientos), datos-demo.sql, pruebas-humo.sql, migracion-token-widget.sql, migracion-foto-perfil.sql
 ├── docs/       mvp, prd, decisiones-tecnicas, api, backlog y evidencias/
 └── README.md
 ```
@@ -103,6 +103,8 @@ Inicia sesión con el usuario de prueba.
 **Widget de chat web (público, sin login):** abre `http://localhost/omnidesk/widget.html`, escribe un nombre y un mensaje y envía. Aparece una conversación nueva en el canal Web Chat dentro del panel. El cliente ve las respuestas del agente: la página guarda un token secreto y consulta la conversación cada 10 segundos. Si el backend no está en `localhost:3000`, cambia `API_URL` dentro de `widget.html`.
 
 > Si tu base de datos ya existía antes de este cambio, corre una sola vez `db/migracion-token-widget.sql` (agrega la columna `token_publico`). Una base nueva ya la trae.
+>
+> Lo mismo con la foto de perfil: si tu base ya existía, corre una sola vez `db/migracion-foto-perfil.sql` (agrega `usuarios.foto`). Las fotos se guardan en `backend/uploads/avatares/` (esa carpeta no se sube a GitHub).
 
 ## Uso de IA
 
