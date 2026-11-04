@@ -1,5 +1,12 @@
 /* OmniDesk · layout compartido: cabecera + barra lateral de Configuración, filtradas por permisos (RBAC).
    Uso: <div id="app-header"></div> [<div id="app-sidebar"></div>] y OmniDesk.mount({ seccion, sub }) */
+// Ícono de la pestaña del navegador (una sola vez para todas las páginas que cargan este archivo)
+(function () {
+  if (document.querySelector('link[rel="icon"]')) return;
+  const a = document.createElement("link"); a.rel = "icon"; a.type = "image/png"; a.href = "assets/favicon.png";
+  const b = document.createElement("link"); b.rel = "apple-touch-icon"; b.href = "assets/apple-touch-icon.png";
+  document.head.append(a, b);
+})();
 window.OmniDesk = {
   API_URL: "http://localhost:3000",
   // Escapa texto antes de meterlo en innerHTML (evita XSS). Única copia: úsala como OmniDesk.esc()
@@ -46,7 +53,7 @@ window.OmniDesk = {
     <header class="fixed top-0 inset-x-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-surface-container-high z-50 flex items-center justify-between px-6">
       <div class="flex items-center gap-8">
         <a href="conversaciones.html" class="flex items-center gap-2">
-          <span class="w-9 h-9 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">hub</span></span>
+          <img src="assets/logo.png" alt="Logo de OmniDesk" width="36" height="36" class="w-9 h-9 object-contain">
           <span class="font-bold text-[17px] tracking-tight text-white">OmniDesk</span></a>
         <nav class="hidden md:flex items-center gap-1">${this.nav.filter(i => this.can(i.perm)).map(i => top(i, i.id === seccion)).join("")}</nav>
       </div>
