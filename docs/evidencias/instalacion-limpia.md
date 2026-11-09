@@ -24,3 +24,10 @@ Prueba de que el proyecto se levanta desde cero siguiendo solo el README.
 
 - El servicio de Python lee las claves de `backend/.env` solo al arrancar: si se agrega `GEMINI_API_KEY` después, hay que reiniciarlo.
 - Para abrir las páginas con doble clic (sin Apache ni servidor), `CORS_ORIGIN` debe incluir `null`; con Apache o `python -m http.server 5500` basta el origen normal.
+
+## Capturas
+- Segunda corrida (09-nov-2026): widget mostrando la respuesta del agente, abierto desde `C:/prueba-omnidesk/frontend/widget.html`.
+
+![Widget con respuesta del agente](../capturas/widget-respuesta-prueba-limpia.png)
+
+![Panel con la conversación](../capturas/panel-conversacion-prueba-limpia.png)
