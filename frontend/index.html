@@ -1,1 +1,68 @@
-<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=login.html"><a href="login.html">Ir a OmniDesk</a>
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>OmniDesk · Inicio</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script src="assets/omnidesk-tokens.js?v=4"></script></head>
+<body class="bg-[#031427] font-body-md text-on-surface antialiased selection:bg-emerald-500/20 selection:text-emerald-300">
+<main class="relative w-full min-h-screen bg-[#031427] flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_35%,rgba(16,185,129,0.08),rgba(3,20,39,0)_65%)]"></div>
+<div class="relative z-10 flex flex-col w-full items-center justify-center py-12 px-4 sm:px-6">
+
+<img src="assets/logo.png" alt="Logo de OmniDesk" width="96" height="96" class="w-24 h-24 object-contain mb-4 drop-shadow-lg">
+<h1 class="text-white text-3xl font-semibold tracking-tight text-center">OmniDesk</h1>
+<p class="text-[#94a3b8] mt-2 mb-10 text-center max-w-md">Atención al cliente con apoyo de IA. Elige cómo quieres entrar.</p>
+
+<div class="w-full max-w-[760px] grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+  <!-- Agentes y administradores -->
+  <a id="tarjeta-panel" href="login.html" class="group bg-[#0b1c30] border border-[#2a3a4f]/70 hover:border-emerald-500/60 rounded-2xl p-7 flex flex-col gap-3 shadow-2xl shadow-black/40 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500">
+    <span class="material-symbols-outlined text-[34px] text-emerald-400">support_agent</span>
+    <h2 class="text-white text-lg font-semibold">Soy agente o administrador</h2>
+    <p id="texto-panel" class="text-[#94a3b8] text-sm leading-relaxed">Inicia sesión para ver y responder conversaciones, clientes y reportes.</p>
+    <span id="accion-panel" class="mt-auto pt-3 text-emerald-400 text-sm font-semibold flex items-center gap-1">Iniciar sesión <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span></span>
+  </a>
+
+  <!-- Clientes (público) -->
+  <a href="widget.html" class="group bg-[#0b1c30] border border-[#2a3a4f]/70 hover:border-emerald-500/60 rounded-2xl p-7 flex flex-col gap-3 shadow-2xl shadow-black/40 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500">
+    <span class="material-symbols-outlined text-[34px] text-emerald-400">forum</span>
+    <h2 class="text-white text-lg font-semibold">Soy cliente</h2>
+    <p class="text-[#94a3b8] text-sm leading-relaxed">Escríbenos sin crear cuenta. Un agente te responderá en esta misma página.</p>
+    <span class="mt-auto pt-3 text-emerald-400 text-sm font-semibold flex items-center gap-1">Abrir el chat <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span></span>
+  </a>
+</div>
+
+<!-- Estado del servidor -->
+<div class="mt-8 flex items-center gap-2 text-sm text-[#94a3b8]" role="status" aria-live="polite">
+  <span id="punto" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+  <span id="estado">Comprobando el servidor…</span>
+</div>
+
+<footer class="mt-6 text-center">
+  <p class="text-sm text-[#64748b]">© 2026 OmniDesk · Todos los derechos reservados</p>
+</footer>
+</div>
+</main>
+
+<script src="assets/omnidesk-layout.js?v=7"></script>
+<script>
+(function () {
+  // 1) Si ya hay sesión guardada, la tarjeta del agente lleva directo al panel.
+  try {
+    const d = JSON.parse(localStorage.getItem("omnidesk_sesion") || "null");
+    if (d && d.token && d.usuario) {
+      document.getElementById("tarjeta-panel").href = "conversaciones.html";
+      document.getElementById("texto-panel").textContent = "Sesión iniciada como " + (d.usuario.nombre || "agente") + ".";
+      document.getElementById("accion-panel").firstChild.textContent = "Ir al panel ";
+    }
+  } catch (e) { /* sin sesión o almacenamiento bloqueado: se queda en "Iniciar sesión" */ }
+
+  // 2) Estado del servidor: sirve para detectar enseguida si falta `npm start`.
+  const punto = document.getElementById("punto"), estado = document.getElementById("estado");
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 4000);
+  fetch(OmniDesk.API_URL + "/api/salud", { signal: ctrl.signal })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(() => { punto.className = "w-2.5 h-2.5 rounded-full bg-emerald-400"; estado.textContent = "Servidor conectado"; })
+    .catch(() => { punto.className = "w-2.5 h-2.5 rounded-full bg-rose-400"; estado.textContent = "No se pudo conectar con el servidor (¿está corriendo npm start?)"; })
+    .finally(() => clearTimeout(t));
+})();
+</script>
+</body></html>

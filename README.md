@@ -98,7 +98,9 @@ Otros usuarios demo: `laura.mendez@omnidesk.local` (Supervisor), `marcos.pena@om
 
 Copia la carpeta `frontend` dentro de `C:\xampp\htdocs\` (por ejemplo `C:\xampp\htdocs\omnidesk`) y abre:
 
-`http://localhost/omnidesk/login.html`
+`http://localhost/omnidesk/` (página de inicio)
+
+La portada tiene dos accesos: **Soy agente o administrador** (lleva al login y, si ya hay sesión, directo al panel) y **Soy cliente** (abre el chat público `widget.html`). Abajo muestra si el servidor responde. También puedes ir directo a `login.html` o `widget.html`.
 
 Inicia sesión con el usuario de prueba.
 
@@ -112,7 +114,7 @@ Inicia sesión con el usuario de prueba.
 
 ## Prueba rápida (10 minutos)
 
-Con MySQL y el backend encendidos (y, si quieres la IA, el servicio de Python), recorre esto en orden. Las páginas están en `http://localhost/omnidesk/`.
+Con MySQL y el backend encendidos (y, si quieres la IA, el servicio de Python), recorre esto en orden. Las páginas están en `http://localhost/omnidesk/`; la portada (`index.html`) enlaza al panel y al widget.
 
 1. **`login.html`**, usuario `admin@omnidesk.local` (Administrador): entra al panel.
 2. **Conversaciones**, usuario Administrador: abre la de **María González** y pulsa **Analizar con IA**. Aparecen puntaje, etiquetas, resumen y respuesta sugerida.
