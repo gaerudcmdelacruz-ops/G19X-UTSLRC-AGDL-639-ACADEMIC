@@ -310,7 +310,6 @@
     async function cargarPerfil() {
       const r = await call("/api/perfil"); if (r.err) { toast(r); return; }
       const u = r.datos.usuario;
-      $("perfil-iniciales").textContent = u.nombre_completo.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
       pintarFoto(u.foto, u.nombre_completo);
       $("perfil-nombre").textContent = u.nombre_completo;
       $("perfil-rol").textContent = u.rol;
