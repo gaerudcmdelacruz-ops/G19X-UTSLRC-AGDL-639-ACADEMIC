@@ -80,6 +80,8 @@ Luego, en `backend/.env`, añade `IA_SERVICIO_URL=http://localhost:8000` y reini
 
 Si no lo enciendes y no defines `IA_SERVICIO_URL`, el backend llama a Gemini/Claude directamente y todo sigue funcionando.
 
+> Si agregas o cambias `GEMINI_API_KEY` en `backend/.env` con el servicio ya encendido, detenlo (Ctrl+C) y vuelve a correr `python -m uvicorn main:app --port 8000`: solo lee las claves al arrancar.
+
 ### 4. Usuario de prueba
 
 Los usuarios de `db/datos-demo.sql` se crean **sin contraseña** (nadie puede entrar todavía). En PowerShell, dentro de la carpeta `backend`, fíjala con:
@@ -100,16 +102,30 @@ Copia la carpeta `frontend` dentro de `C:\xampp\htdocs\` (por ejemplo `C:\xampp\
 
 Inicia sesión con el usuario de prueba.
 
+> ¿Abriste `login.html` o `widget.html` con doble clic (la barra dice `file:///…`)? Entonces agrega `null` a `CORS_ORIGIN` en `backend/.env`, por ejemplo `CORS_ORIGIN=http://localhost,null`, y reinicia el backend. Con Apache (`http://localhost/omnidesk/…`) no hace falta.
+
 **Widget de chat web (público, sin login):** abre `http://localhost/omnidesk/widget.html`, escribe un nombre y un mensaje y envía. Aparece una conversación nueva en el canal Web Chat dentro del panel. El cliente ve las respuestas del agente: la página guarda un token secreto y consulta la conversación cada 10 segundos. Si el backend no está en `localhost:3000`, cambia `API_URL` dentro de `widget.html`.
 
 > Si tu base de datos ya existía antes de este cambio, corre una sola vez `db/migracion-token-widget.sql` (agrega la columna `token_publico`). Una base nueva ya la trae.
 >
 > Lo mismo con la foto de perfil: si tu base ya existía, corre una sola vez `db/migracion-foto-perfil.sql` (agrega `usuarios.foto`). Las fotos se guardan en `backend/uploads/avatares/` (esa carpeta no se sube a GitHub).
 
+## Prueba rápida (10 minutos)
+
+Con MySQL y el backend encendidos (y, si quieres la IA, el servicio de Python), recorre esto en orden. Las páginas están en `http://localhost/omnidesk/`.
+
+1. **`login.html`**, usuario `admin@omnidesk.local` (Administrador): entra al panel.
+2. **Conversaciones**, usuario Administrador: abre la de **María González** y pulsa **Analizar con IA**. Aparecen puntaje, etiquetas, resumen y respuesta sugerida.
+3. **`widget.html`**, sin usuario (es público): escribe un nombre y un mensaje y envía. Aparece "Recibimos tu mensaje".
+4. **Conversaciones**, Administrador: aparece una conversación nueva del canal **Web Chat**, sin asignar. Ábrela y respóndele.
+5. **`widget.html`**, la misma pestaña del paso 3: en menos de 10 segundos aparece **"Agente: …"** con tu respuesta.
+6. **Mi perfil**, Administrador: sube una foto (se ve también en la cabecera), luego cambia tu nombre y guarda. La foto y el nombre nuevo se mantienen.
+7. Cierra sesión y entra como `marcos.pena@omnidesk.local` (Agente; pon su contraseña antes con `npm run admin`): **no** ve Reportes, Agentes, Roles y permisos ni Auditoría. El Administrador sí.
+
 ## Uso de IA
 
 - **En el producto:** el botón *Analizar con IA* envía los mensajes de una conversación a Gemini o Claude (por el servicio Python o directo desde Node) y devuelve puntaje de sentimiento, etiquetas, resumen y una respuesta sugerida. La IA nunca envía nada sola: el agente decide. No se entrenan modelos; solo se consulta uno externo.
-- **En el desarrollo:** el código, la base de datos y la documentación se elaboraron con ayuda de Claude (asistente de IA). Todo fue revisado, ejecutado y probado por el equipo.
+- **En el desarrollo:** el código, la base de datos y la documentación se elaboraron con ayuda de Claude (asistente de IA). Lo revisé, ejecuté y probé yo; los resultados de la instalación desde cero están en `docs/evidencias/instalacion-limpia.md`.
 
 ## Variables de entorno (`backend/.env`)
 
