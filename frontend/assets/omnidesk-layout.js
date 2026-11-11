@@ -65,20 +65,28 @@ window.OmniDesk = {
       : "text-tertiary font-medium hover:text-on-surface hover:bg-surface-container-low"}">
       <span class="material-symbols-outlined text-[20px] ${on ? "text-primary" : "text-tertiary"}">${i.icon}</span><span>${i.label}</span></a>`;
 
+    const mov = (i, on) => `<a href="${i.href}" ${on ? 'aria-current="page"' : ""} class="block px-3 py-3 rounded-lg text-sm ${on
+      ? "text-primary font-semibold bg-surface-container"
+      : "text-on-surface-variant font-medium hover:text-white hover:bg-surface-container-low"}">${i.label}</a>`;
+
     document.getElementById("app-header").innerHTML = `
-    <header class="fixed top-0 inset-x-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-surface-container-high z-50 flex items-center justify-between px-6">
-      <div class="flex items-center gap-8">
+    <header class="fixed top-0 inset-x-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-surface-container-high z-50 flex items-center justify-between px-4 sm:px-6">
+      <div class="flex items-center gap-3 md:gap-8">
+        <button id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" class="md:hidden w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface"><span class="material-symbols-outlined text-[22px]">menu</span></button>
         <a href="conversaciones.html" class="flex items-center gap-2">
           <img src="assets/logo.png" alt="Logo de OmniDesk" width="36" height="36" class="w-9 h-9 object-contain">
           <span class="font-bold text-[17px] tracking-tight text-white">OmniDesk</span></a>
         <nav class="hidden md:flex items-center gap-1">${this.nav.filter(i => this.can(i.perm)).map(i => top(i, i.id === seccion)).join("")}</nav>
       </div>
-      <div class="flex items-center gap-3 text-xs font-medium text-emerald-400">
-        <span class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-container-high"><span class="w-2 h-2 rounded-full bg-primary"></span>En línea</span>
+      <div class="flex items-center gap-2 sm:gap-3 text-xs font-medium text-emerald-400">
+        <span title="En línea" class="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-container-high"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="hidden sm:inline">En línea</span></span>
         <a href="mi-perfil.html" data-avatar title="${this.esc(this.session.nombre)} · Mi perfil" class="w-9 h-9 rounded-full overflow-hidden bg-[#031427] border border-emerald-500/40 text-emerald-300 flex items-center justify-center hover:border-emerald-400">${this.avatarHtml()}</a>
         <button data-salir class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface hover:bg-surface-container-highest" title="${this.session.nombre} · Cerrar sesión"><span class="material-symbols-outlined text-[20px]">logout</span></button>
       </div>
-    </header>`;
+    </header>
+    <nav id="menu-movil" aria-label="Menú principal" class="hidden md:hidden fixed top-16 inset-x-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container-high p-3 flex flex-col gap-1">${this.nav.filter(i => this.can(i.perm)).map(i => mov(i, i.id === seccion)).join("")}</nav>`;
+    const bm = document.getElementById("btn-menu"), mm = document.getElementById("menu-movil");
+    if (bm && mm) bm.addEventListener("click", () => { const abierto = !mm.classList.toggle("hidden"); bm.setAttribute("aria-expanded", String(abierto)); });
 
     const sb = document.getElementById("app-sidebar");
     if (sb) sb.innerHTML = `
