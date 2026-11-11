@@ -102,6 +102,8 @@ Copia la carpeta `frontend` dentro de `C:\xampp\htdocs\` (por ejemplo `C:\xampp\
 
 La portada tiene dos accesos: **Soy agente o administrador** (lleva al login y, si ya hay sesión, directo al panel) y **Soy cliente** (abre el chat público `widget.html`). Abajo muestra si el servidor responde. También puedes ir directo a `login.html` o `widget.html`.
 
+La imagen del panel izquierdo del login es `frontend/assets/login-imagen.svg` (solo se ve en pantallas anchas). Para usar otra, guárdala en `frontend/assets/` y cambia el nombre en la línea `<img src="assets/login-imagen.svg" …>` de `login.html`. La pantalla de Conversaciones se adapta al tamaño: en celular muestra primero la lista y, al tocar una conversación, el chat con un botón para volver.
+
 Inicia sesión con el usuario de prueba.
 
 > ¿Abriste `login.html` o `widget.html` con doble clic (la barra dice `file:///…`)? Entonces agrega `null` a `CORS_ORIGIN` en `backend/.env`, por ejemplo `CORS_ORIGIN=http://localhost,null`, y reinicia el backend. Con Apache (`http://localhost/omnidesk/…`) no hace falta.
